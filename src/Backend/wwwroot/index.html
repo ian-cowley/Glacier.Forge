@@ -9,7 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -26,7 +26,7 @@
                 <span class="brand-text">GLACIER</span>
                 <span class="brand-subtext ms-1">SOFTWARE</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -50,7 +50,7 @@
                     <h1 class="hero-title mb-3">Glacier.<span class="text-cyan">Forge</span></h1>
                     <p class="hero-subtitle mb-4">The ultimate Semantic-to-Relational Hardener. Map and validate non-deterministic LLM JSON outputs directly into SQL Server and PostgreSQL at <span class="highlight-cyan">146μs speeds</span> with <span class="highlight-cyan">0-byte heap allocations</span>.</p>
                     <div class="d-flex flex-wrap gap-3">
-                        <a href="https://checkout.lemonsqueezy.com/checkout/buy/glacier-forge" class="btn btn-cyan btn-lg"><i class="fa-solid fa-cart-shopping me-2"></i>Buy Now £60/year</a>
+                        <a href="https://checkout.lemonsqueezy.com/checkout/buy/glacier-forge" class="btn btn-cyan btn-lg"><i class="fa-solid fa-cart-shopping me-2"></i>Buy Now $79/year</a>
                         <a href="#docs" class="btn btn-outline-secondary btn-lg">Explore Docs</a>
                     </div>
                 </div>
@@ -68,10 +68,10 @@
                             <pre class="mb-0"><code><span class="text-secondary">// BenchmarkDotNet v0.15.8</span>
 <span class="text-cyan">AMD Ryzen AI 9 HX 370 @ 2.00GHz</span>
 
-| Method                  | Mean     | Allocated |
-|:----------------------- |---------:|----------:|
-| <span class="text-green">BenchmarkGlacierForge</span>   | <span class="text-white">144.8 μs</span> |       <span class="text-green">0 B</span> |
-| BenchmarkSystemTextJson  | 121.2 μs |   40000 B |
+| Method                         | Mean     | Allocated |
+|:------------------------------ |---------:|----------:|
+| <span class="text-green">BenchmarkCustomZeroAllocParser</span> | <span class="text-white">144.8 μs</span> |       <span class="text-green">0 B</span> |
+| BenchmarkSystemTextJson        | 121.2 μs |   40000 B |
 
 <span class="text-cyan">Status:</span> 0 managed heap allocations in hot path.
 <span class="text-cyan">Safety:</span> Native AOT compiled, ECDSA signed.</code></pre>
@@ -123,15 +123,15 @@
                 <div class="col-lg-3 mb-4 mb-lg-0">
                     <div class="nav flex-column nav-pills nav-pills-custom me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                         <button class="nav-link active" id="v-pills-cli-tab" data-bs-toggle="pill" data-bs-target="#v-pills-cli" type="button" role="tab" aria-controls="v-pills-cli" aria-selected="true"><i class="fa-solid fa-terminal me-2"></i> CLI Reference</button>
-                        <button class="nav-link" id="v-pills-json-tab" data-bs-toggle="pill" data-bs-target="#v-pills-json" type="button" role="tab" aria-controls="v-pills-json" aria-selected="false"><i class="fa-solid fa-code me-2"></i> JSON Ingest Rules</button>
-                        <button class="nav-link" id="v-pills-pipelines-tab" data-bs-toggle="pill" data-bs-target="#v-pills-pipelines" type="button" role="tab" aria-controls="v-pills-pipelines" aria-selected="false"><i class="fa-solid fa-gears me-2"></i> Pipeline Examples</button>
-                        <button class="nav-link" id="v-pills-licensing-tab" data-bs-toggle="pill" data-bs-target="#v-pills-licensing" type="button" role="tab" aria-controls="v-pills-licensing" aria-selected="false"><i class="fa-solid fa-key me-2"></i> License Config</button>
+                        <button class="nav-link" id="v-pills-json-tab" data-bs-toggle="pill" data-bs-target="#v-pills-json" type="button" role="tab" aria-controls="v-pills-json" aria-selected="false" tabindex="-1"><i class="fa-solid fa-code me-2"></i> JSON Ingest Rules</button>
+                        <button class="nav-link" id="v-pills-pipelines-tab" data-bs-toggle="pill" data-bs-target="#v-pills-pipelines" type="button" role="tab" aria-controls="v-pills-pipelines" aria-selected="false" tabindex="-1"><i class="fa-solid fa-gears me-2"></i> Pipeline Examples</button>
+                        <button class="nav-link" id="v-pills-licensing-tab" data-bs-toggle="pill" data-bs-target="#v-pills-licensing" type="button" role="tab" aria-controls="v-pills-licensing" aria-selected="false" tabindex="-1"><i class="fa-solid fa-key me-2"></i> License Config</button>
                     </div>
                 </div>
                 <div class="col-lg-9">
                     <div class="tab-content doc-tab-content p-4" id="v-pills-tabContent">
                         <!-- CLI Reference -->
-                        <div class="tab-pane fade show active" id="v-pills-cli" role="tabpanel" aria-labelledby="v-pills-cli-tab">
+                        <div class="tab-pane fade active show" id="v-pills-cli" role="tabpanel" aria-labelledby="v-pills-cli-tab">
                             <h3 class="mb-3">Command Line Reference</h3>
                             <p>To run the compiled self-contained AOT binary, pass the target database engine, schema table, and optional file path parameters:</p>
                             <pre class="code-block"><code>Glacier.Forge --db &lt;sqlserver|postgres&gt; --table &lt;schema.table_name&gt; [--file &lt;file_path&gt;]</code></pre>
@@ -171,7 +171,7 @@
                         </div>
                         <!-- JSON Ingest Rules -->
                         <div class="tab-pane fade" id="v-pills-json" role="tabpanel" aria-labelledby="v-pills-json-tab">
-                            <h3 class="mb-3">JSONL Formatting & Schema Rules</h3>
+                            <h3 class="mb-3">JSONL Formatting &amp; Schema Rules</h3>
                             <p>Each line must contain a single JSON Object. Below are the precise validation behaviors of the zero-allocation parser:</p>
                             <ul class="ps-3">
                                 <li class="mb-3"><strong>Case-Insensitive Column Matching:</strong> Incoming JSON properties are matched against the target table's database schema columns via a high-performance Trie. <code>userId</code>, <code>userid</code>, and <code>USERID</code> are all successfully resolved to the database column <code>UserId</code>.</li>
@@ -183,7 +183,7 @@
                         <!-- Pipeline Examples -->
                         <div class="tab-pane fade" id="v-pills-pipelines" role="tabpanel" aria-labelledby="v-pills-pipelines-tab">
                             <h3 class="mb-3">Ingestion Pipeline Workflows</h3>
-                            
+
                             <h4 class="mt-4 mb-2">1. Real-Time Streaming via Standard Input (stdin)</h4>
                             <p>Stream live non-deterministic logs or generated outputs directly from a scripting environment into a secure PostgreSQL table:</p>
                             <pre class="code-block"><code>python generate_llm_records.py | Glacier.Forge --db postgres --table public.raw_logs</code></pre>
@@ -201,7 +201,7 @@
                         <div class="tab-pane fade" id="v-pills-licensing" role="tabpanel" aria-labelledby="v-pills-licensing-tab">
                             <h3 class="mb-3">License Key Activation</h3>
                             <p>Glacier.Forge requires a valid ECDSA signature key to initiate the engine. You can configure this in one of two ways:</p>
-                            
+
                             <h4 class="mt-4 mb-2">Option A: Environment Variable (Recommended for Docker/App Runner)</h4>
                             <p>Set the <code>GLACIER_LICENSE</code> environment variable to your base64-encoded signature key:</p>
                             <pre class="code-block"><code># PowerShell
@@ -306,7 +306,7 @@ eyJQaW5nIjogIm9rIn0=.MEUCIQ...</code></pre>
                 <a href="https://github.com/ian-cowley" target="_blank" class="mx-3"><i class="fa-brands fa-github me-1"></i> GitHub</a>
                 <a href="mailto:support@glaciersoftware.dev" class="mx-3"><i class="fa-solid fa-envelope me-1"></i> Support</a>
             </div>
-            <p class="mb-0 text-muted">&copy; 2026 Glacier Software. All rights reserved. Developed for glaciersoftware.dev.</p>
+            <p class="mb-0 text-muted">© 2026 Glacier Software. All rights reserved. Developed for glaciersoftware.dev.</p>
         </div>
     </footer>
 
