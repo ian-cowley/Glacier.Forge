@@ -68,10 +68,10 @@
                             <pre class="mb-0"><code><span class="text-secondary">// BenchmarkDotNet v0.15.8</span>
 <span class="text-cyan">AMD Ryzen AI 9 HX 370 @ 2.00GHz</span>
 
-| Method                         | Mean     | Allocated |
-|:------------------------------ |---------:|----------:|
-| <span class="text-green">BenchmarkCustomZeroAllocParser</span> | <span class="text-white">144.8 μs</span> |       <span class="text-green">0 B</span> |
-| BenchmarkSystemTextJson        | 121.2 μs |   40000 B |
+| Method                         | Mean     | Error   | StdDev  | Gen0   | Allocated |
+|:------------------------------ |---------:|--------:|--------:|-------:|----------:|
+| <span class="text-green">BenchmarkCustomZeroAllocParser</span> | <span class="text-white">144.8 μs</span> | 1.96 μs | 1.83 μs |      - |       <span class="text-green">0 B</span> |
+| BenchmarkSystemTextJson        | 121.2 μs | 2.32 μs | 2.17 μs | 4.7607 |   40000 B |
 
 <span class="text-cyan">Status:</span> 0 managed heap allocations in hot path.
 <span class="text-cyan">Safety:</span> Native AOT compiled, ECDSA signed.</code></pre>
