@@ -179,6 +179,21 @@
                                 <li class="mb-3"><strong>Null Handling:</strong> Missing properties or explicit <code>null</code> tokens (e.g., <code>"email": null</code>) are automatically mapped to database <code>NULL</code> values.</li>
                                 <li class="mb-3"><strong>Superfluous Properties:</strong> Extra keys present in the JSON line that do not exist in the database table schema are automatically skipped.</li>
                             </ul>
+
+                            <h4 class="mt-4 mb-2">How it Knows Your Database Credentials</h4>
+                            <p>Glacier.Forge checks the execution environment for database connection settings using the standard .NET configuration provider chain:</p>
+                            <ol class="ps-3 mb-4">
+                                <li class="mb-2"><strong>Local Configuration:</strong> Reads <code>appsettings.json</code> located in the folder of the running binary under the <code>ConnectionStrings</code> node.</li>
+                                <li class="mb-2"><strong>Environment Variables:</strong> Resolves system environment keys matching <code>ConnectionStrings__DefaultConnection</code> (ideal for stateless container runtimes like AWS App Runner or Docker).</li>
+                                <li class="mb-2"><strong>Development Secret Store:</strong> During local CLI development, it checks the local C# Secret Manager store (<code>dotnet user-secrets</code>).</li>
+                            </ol>
+
+                            <h4 class="mt-4 mb-2">How it Knows the Database &amp; JSON Schema</h4>
+                            <p>Glacier.Forge is designed to run <strong>dynamically</strong> without needing any manual schema code edits or predefined JSON Schema files:</p>
+                            <ul class="ps-3">
+                                <li class="mb-3"><strong>Dynamic Database Schema Lookup:</strong> At startup, the engine connects to the target database and queries the database catalog (e.g. <code>INFORMATION_SCHEMA.COLUMNS</code> in SQL Server, or <code>pg_catalog</code> views in Postgres) for the specific table name passed to the <code>--table</code> parameter. It resolves column names, exact data types, and nullability, constructing a fast in-memory schema schema map.</li>
+                                <li class="mb-3"><strong>Schema-Driven JSON Validation:</strong> The resolved database schema acts as the validation source of truth. As JSON records stream in, the parser dynamically matches the keys against the fetched column map. If a value type mismatches (e.g., a text string sent to an integer column) or a non-nullable column is omitted, the record is rejected, protecting database integrity on-the-fly.</li>
+                            </ul>
                         </div>
                         <!-- Pipeline Examples -->
                         <div class="tab-pane fade" id="v-pills-pipelines" role="tabpanel" aria-labelledby="v-pills-pipelines-tab">

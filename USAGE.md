@@ -39,6 +39,21 @@ Glacier.Forge --db <sqlserver|postgres> --table <schema.table_name> [--file <fil
 
 ---
 
+## Configuration & Schema Resolution
+
+### 1. How Database Credentials are Resolved
+Glacier.Forge checks the execution environment for database connection settings using the standard .NET configuration provider chain:
+* **Local Configuration**: Reads `appsettings.json` located in the folder of the running binary under the `ConnectionStrings` node.
+* **Environment Variables**: Resolves system environment keys matching `ConnectionStrings__DefaultConnection` (ideal for stateless container runtimes like AWS App Runner or Docker).
+* **Development Secret Store**: During local CLI development, it checks the local C# Secret Manager store (`dotnet user-secrets`).
+
+### 2. How the Database & JSON Schema is Discovered
+Glacier.Forge is designed to run **dynamically** without needing any manual schema code edits or predefined JSON Schema files:
+* **Dynamic Database Schema Lookup**: At startup, the engine connects to the target database and queries the database catalog (e.g. `INFORMATION_SCHEMA.COLUMNS` in SQL Server, or `pg_catalog` views in Postgres) for the specific table name passed to the `--table` parameter. It resolves column names, exact data types, and nullability, constructing a fast in-memory schema schema map.
+* **Schema-Driven JSON Validation**: The resolved database schema acts as the validation source of truth. As JSON records stream in, the parser dynamically matches the keys against the fetched column map. If a value type mismatches (e.g., a text string sent to an integer column) or a non-nullable column is omitted, the record is rejected, protecting database integrity on-the-fly.
+
+---
+
 ## Input JSONL Format Rules & Nuances
 
 Each line in the file or standard input stream must represent a single, self-contained JSON Object.
