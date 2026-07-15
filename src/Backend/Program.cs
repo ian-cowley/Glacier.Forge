@@ -18,6 +18,8 @@ public static class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         var app = builder.Build();
+        app.UseDefaultFiles();
+        app.UseStaticFiles();
 
         app.MapPost("/webhooks/lemonsqueezy", async (HttpRequest request, IConfiguration config) =>
         {
