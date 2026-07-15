@@ -16,10 +16,11 @@ public class ParserTests
         -----END PRIVATE KEY-----
         """;
 
-    private static string GenerateLicenseKey(string email, string tier, DateTime subscriptionEnd)
+    private static string GenerateLicenseKey(string email, string tier, DateTime subscriptionEnd, string product = "Glacier.Forge")
     {
         var licenseData = new LicensePayload
         {
+            Product = product,
             Email = email,
             Tier = tier,
             SubscriptionEnd = subscriptionEnd
@@ -270,6 +271,18 @@ public class ParserTests
         string malformedKey = $"{payloadBase64}.{signatureBase64}";
 
         bool isValid = LicenseManager.ValidateLicense(malformedKey);
+        Assert.False(isValid);
+    }
+
+    [Fact]
+    public void TestLicenseValidationProductMismatch()
+    {
+        LicenseManager.OverrideBuildDate = new DateTime(2026, 7, 14, 0, 0, 0, DateTimeKind.Utc);
+        
+        // Key is cryptographically valid, but generated for a different product name
+        string licenseKey = GenerateLicenseKey("user@domain.com", "enterprise", new DateTime(2030, 1, 1, 0, 0, 0, DateTimeKind.Utc), "Glacier.Polaris");
+        
+        bool isValid = LicenseManager.ValidateLicense(licenseKey);
         Assert.False(isValid);
     }
 

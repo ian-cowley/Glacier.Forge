@@ -52,6 +52,7 @@ public static class Program
             {
                 var attributes = payload?["data"]?["attributes"];
                 string email = attributes?["user_email"]?.ToString() ?? "unknown@example.com";
+                string product = attributes?["product_name"]?.ToString() ?? "Glacier.Forge";
                 
                 // Logic to determine tier and expiry (e.g., 1 year from now)
                 string tier = "Pro"; 
@@ -59,7 +60,7 @@ public static class Program
 
                 // 4. Generate the License Key
                 string privateKeyPem = config["LicenseSettings:PrivateKeyPem"] ?? throw new InvalidOperationException("Missing PrivateKeyPem configuration.");
-                string licenseKey = GenerateLicenseKey(email, tier, subscriptionEnd, privateKeyPem);
+                string licenseKey = GenerateLicenseKey(product, email, tier, subscriptionEnd, privateKeyPem);
 
                 // 5. Deliver the Key
                 Console.WriteLine($"Generated Key for {email}: {licenseKey}");
@@ -74,11 +75,12 @@ public static class Program
         app.Run();
     }
 
-    private static string GenerateLicenseKey(string email, string tier, DateTime subscriptionEnd, string privateKeyPem)
+    private static string GenerateLicenseKey(string product, string email, string tier, DateTime subscriptionEnd, string privateKeyPem)
     {
         // Create the exact JSON structure expected by the CLI
         var licenseData = new
         {
+            Product = product,
             Email = email,
             Tier = tier,
             // Format datetime matching yyyy-MM-ddTHH:mm:ssZ

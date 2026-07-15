@@ -8,6 +8,7 @@ namespace Glacier.Forge;
 
 public sealed class LicensePayload
 {
+    public required string Product { get; init; }
     public required string Email { get; init; }
     public required string Tier { get; init; }
     public required DateTime SubscriptionEnd { get; init; }
@@ -78,6 +79,12 @@ public static class LicenseManager
             if (payload == null)
             {
                 Console.Error.WriteLine("License Error: Unable to deserialize license payload.");
+                return false;
+            }
+
+            if (payload.Product != "Glacier.Forge")
+            {
+                Console.Error.WriteLine("License Error: This key is for a different Glacier product.");
                 return false;
             }
 
