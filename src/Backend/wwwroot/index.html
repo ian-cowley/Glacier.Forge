@@ -33,6 +33,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="#hero">Forge</a></li>
                     <li class="nav-item"><a class="nav-link" href="#features">Architecture</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#docs">Documentation</a></li>
                     <li class="nav-item"><a class="nav-link" href="#open-source">Open Source</a></li>
                     <li class="nav-item"><a class="nav-link btn btn-outline-cyan ms-lg-3" href="mailto:support@glaciersoftware.dev">Get Support</a></li>
                 </ul>
@@ -50,7 +51,7 @@
                     <p class="hero-subtitle mb-4">The ultimate Semantic-to-Relational Hardener. Map and validate non-deterministic LLM JSON outputs directly into SQL Server and PostgreSQL at <span class="highlight-cyan">146μs speeds</span> with <span class="highlight-cyan">0-byte heap allocations</span>.</p>
                     <div class="d-flex flex-wrap gap-3">
                         <a href="https://checkout.lemonsqueezy.com/checkout/buy/glacier-forge" class="btn btn-cyan btn-lg"><i class="fa-solid fa-cart-shopping me-2"></i>Buy Now £60/year</a>
-                        <a href="#features" class="btn btn-outline-secondary btn-lg">Explore Docs</a>
+                        <a href="#docs" class="btn btn-outline-secondary btn-lg">Explore Docs</a>
                     </div>
                 </div>
                 <div class="col-lg-5 mt-5 mt-lg-0 text-center">
@@ -105,6 +106,115 @@
                         <i class="fa-solid fa-database feature-icon mb-4"></i>
                         <h3>Direct Database Sinks</h3>
                         <p>Supports bulk-loading directly via PostgreSQL binary <code>COPY</code> over raw UTF-8 byte streams and highly optimized SQL Server Bulk Data Reader structures.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Documentation Section -->
+    <section id="docs" class="docs-section py-5">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Glacier.Forge <span class="text-cyan">Documentation</span></h2>
+                <p class="section-subtitle">Exhaustive guide to integration, parameters, formats, and pipelines</p>
+            </div>
+            <div class="row">
+                <div class="col-lg-3 mb-4 mb-lg-0">
+                    <div class="nav flex-column nav-pills nav-pills-custom me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        <button class="nav-link active" id="v-pills-cli-tab" data-bs-toggle="pill" data-bs-target="#v-pills-cli" type="button" role="tab" aria-controls="v-pills-cli" aria-selected="true"><i class="fa-solid fa-terminal me-2"></i> CLI Reference</button>
+                        <button class="nav-link" id="v-pills-json-tab" data-bs-toggle="pill" data-bs-target="#v-pills-json" type="button" role="tab" aria-controls="v-pills-json" aria-selected="false"><i class="fa-solid fa-code me-2"></i> JSON Ingest Rules</button>
+                        <button class="nav-link" id="v-pills-pipelines-tab" data-bs-toggle="pill" data-bs-target="#v-pills-pipelines" type="button" role="tab" aria-controls="v-pills-pipelines" aria-selected="false"><i class="fa-solid fa-gears me-2"></i> Pipeline Examples</button>
+                        <button class="nav-link" id="v-pills-licensing-tab" data-bs-toggle="pill" data-bs-target="#v-pills-licensing" type="button" role="tab" aria-controls="v-pills-licensing" aria-selected="false"><i class="fa-solid fa-key me-2"></i> License Config</button>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <div class="tab-content doc-tab-content p-4" id="v-pills-tabContent">
+                        <!-- CLI Reference -->
+                        <div class="tab-pane fade show active" id="v-pills-cli" role="tabpanel" aria-labelledby="v-pills-cli-tab">
+                            <h3 class="mb-3">Command Line Reference</h3>
+                            <p>To run the compiled self-contained AOT binary, pass the target database engine, schema table, and optional file path parameters:</p>
+                            <pre class="code-block"><code>Glacier.Forge --db &lt;sqlserver|postgres&gt; --table &lt;schema.table_name&gt; [--file &lt;file_path&gt;]</code></pre>
+                            <h4 class="mt-4 mb-3">Parameters</h4>
+                            <div class="table-responsive">
+                                <table class="table table-dark-custom mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Flag</th>
+                                            <th>Required</th>
+                                            <th>Values</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>--db</code></td>
+                                            <td><span class="text-cyan">Yes</span></td>
+                                            <td><code>sqlserver</code>, <code>postgres</code></td>
+                                            <td>Relational database engine mapping target.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>--table</code></td>
+                                            <td><span class="text-cyan">Yes</span></td>
+                                            <td>String (e.g., <code>dbo.users</code>)</td>
+                                            <td>Table name. For Postgres, qualify it with a schema (e.g. <code>public.users</code>).</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>--file</code></td>
+                                            <td>No</td>
+                                            <td>File path</td>
+                                            <td>Ingests a local <code>.jsonl</code> file. If omitted, streams via <code>stdin</code>.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- JSON Ingest Rules -->
+                        <div class="tab-pane fade" id="v-pills-json" role="tabpanel" aria-labelledby="v-pills-json-tab">
+                            <h3 class="mb-3">JSONL Formatting & Schema Rules</h3>
+                            <p>Each line must contain a single JSON Object. Below are the precise validation behaviors of the zero-allocation parser:</p>
+                            <ul class="ps-3">
+                                <li class="mb-3"><strong>Case-Insensitive Column Matching:</strong> Incoming JSON properties are matched against the target table's database schema columns via a high-performance Trie. <code>userId</code>, <code>userid</code>, and <code>USERID</code> are all successfully resolved to the database column <code>UserId</code>.</li>
+                                <li class="mb-3"><strong>Nested Structures Tolerated:</strong> If properties contain arrays or sub-objects, the engine calls <code>reader.Skip()</code> to safely skip them without loading or allocating memory, ensuring stability against arbitrary JSON.</li>
+                                <li class="mb-3"><strong>Null Handling:</strong> Missing properties or explicit <code>null</code> tokens (e.g., <code>"email": null</code>) are automatically mapped to database <code>NULL</code> values.</li>
+                                <li class="mb-3"><strong>Superfluous Properties:</strong> Extra keys present in the JSON line that do not exist in the database table schema are automatically skipped.</li>
+                            </ul>
+                        </div>
+                        <!-- Pipeline Examples -->
+                        <div class="tab-pane fade" id="v-pills-pipelines" role="tabpanel" aria-labelledby="v-pills-pipelines-tab">
+                            <h3 class="mb-3">Ingestion Pipeline Workflows</h3>
+                            
+                            <h4 class="mt-4 mb-2">1. Real-Time Streaming via Standard Input (stdin)</h4>
+                            <p>Stream live non-deterministic logs or generated outputs directly from a scripting environment into a secure PostgreSQL table:</p>
+                            <pre class="code-block"><code>python generate_llm_records.py | Glacier.Forge --db postgres --table public.raw_logs</code></pre>
+                            <p class="text-muted"><i class="fa-solid fa-circle-info me-1"></i> <em>Note: Forge buffers inputs in-memory and automatically flushes them in chunks of 1,000 to keep the transactional load low.</em></p>
+
+                            <h4 class="mt-4 mb-2">2. Mass File Ingestion (Hybrid I/O)</h4>
+                            <p>Ingest a local static backup file. Forge automatically selects the optimal loading strategy based on file size:</p>
+                            <pre class="code-block"><code>Glacier.Forge --db sqlserver --table dbo.billing_history --file C:\backups\data.jsonl</code></pre>
+                            <ul class="ps-3">
+                                <li class="mb-2"><strong>&lt; 1MB:</strong> Rented array buffers from <code>ArrayPool&lt;byte&gt;</code> are utilized.</li>
+                                <li class="mb-2"><strong>&ge; 1MB:</strong> Utilizes a <code>MemoryMappedFile</code> pointer to map raw bytes directly to memory, enabling copy-free loading for gigabyte-scale streams.</li>
+                            </ul>
+                        </div>
+                        <!-- License Config -->
+                        <div class="tab-pane fade" id="v-pills-licensing" role="tabpanel" aria-labelledby="v-pills-licensing-tab">
+                            <h3 class="mb-3">License Key Activation</h3>
+                            <p>Glacier.Forge requires a valid ECDSA signature key to initiate the engine. You can configure this in one of two ways:</p>
+                            
+                            <h4 class="mt-4 mb-2">Option A: Environment Variable (Recommended for Docker/App Runner)</h4>
+                            <p>Set the <code>GLACIER_LICENSE</code> environment variable to your base64-encoded signature key:</p>
+                            <pre class="code-block"><code># PowerShell
+$env:GLACIER_LICENSE="&lt;base64_payload&gt;.&lt;base64_signature&gt;"
+
+# Shell (Linux/macOS)
+export GLACIER_LICENSE="&lt;base64_payload&gt;.&lt;base64_signature&gt;"</code></pre>
+
+                            <h4 class="mt-4 mb-2">Option B: Local License File</h4>
+                            <p>Place a file named <code>license.lic</code> directly in the directory of the executing application binary containing the license key:</p>
+                            <pre class="code-block"><code># File: license.lic
+eyJQaW5nIjogIm9rIn0=.MEUCIQ...</code></pre>
+                        </div>
                     </div>
                 </div>
             </div>

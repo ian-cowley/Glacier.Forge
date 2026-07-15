@@ -320,3 +320,70 @@ h1, h2, h3, h4, h5, h6 {
 .footer-links a:hover {
     color: var(--accent-color);
 }
+
+/* Documentation Tabs Styling */
+.docs-section {
+    background-color: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-pills-custom .nav-link {
+    color: var(--text-secondary);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    margin-bottom: 0.5rem;
+    text-align: left;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.nav-pills-custom .nav-link:hover {
+    color: var(--accent-color);
+    border-color: var(--accent-hover);
+}
+
+.nav-pills-custom .nav-link.active {
+    color: var(--bg-primary);
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    font-weight: 600;
+}
+
+.doc-tab-content {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    min-height: 300px;
+}
+
+.doc-tab-content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.code-block {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    overflow-x: auto;
+}
+
+.code-block code {
+    color: var(--accent-color);
+}
+
+.table-dark-custom {
+    --bs-table-bg: var(--bg-primary);
+    --bs-table-border-color: var(--border-color);
+    --bs-table-color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.table-dark-custom th {
+    color: var(--text-primary);
+    font-weight: 600;
+}
