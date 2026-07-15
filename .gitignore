@@ -1,0 +1,28 @@
+## Build outputs
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+
+## User Secrets & App Settings
+secrets.json
+appsettings.Development.json
+
+## BenchmarkDotNet
+**/BenchmarkDotNet.Artifacts/
+
+## IDE and Tools
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## OS files
+.DS_Store
+Thumbs.db
+
+## Crash dumps and test results
+*.stackdump
+TestResults/
+*.log

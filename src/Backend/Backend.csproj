@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <UserSecretsId>da169d5f-5afc-481e-8b23-0508badab68c</UserSecretsId>
+    <RootNamespace>Glacier.Forge.Backend</RootNamespace>
+  </PropertyGroup>
+
+</Project>

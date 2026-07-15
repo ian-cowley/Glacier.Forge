@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Glacier.Forge/Glacier.Forge.csproj" Type="Classic C#" />
+    <Project Path="src/Backend/Backend.csproj" Type="Classic C#" />
+    <Project Path="src/Benchmarks/Benchmarks.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Glacier.Forge.Tests/Glacier.Forge.Tests.csproj" Type="Classic C#" />
+  </Folder>
+</Solution>
