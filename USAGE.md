@@ -28,7 +28,7 @@ Glacier.Forge is designed as a zero-copy data hardener between non-deterministic
 
 To run the compiled binary:
 ```bash
-Glacier.Forge --db <sqlserver|postgres> --table <schema.table_name> [--file <file_path>]
+Glacier.Forge --db <sqlserver|postgres> --table <schema.table_name> [--file <file_path>] [--map <json_key:db_column,...>]
 ```
 
 | Flag | Required | Allowed Values | Description |
@@ -36,6 +36,7 @@ Glacier.Forge --db <sqlserver|postgres> --table <schema.table_name> [--file <fil
 | `--db` | **Yes** | `sqlserver` \| `postgres` | Target database type. |
 | `--table` | **Yes** | String (e.g., `customers` or `dbo.users`) | Target database table name. For Postgres, can be schema-qualified (e.g., `public.users`). |
 | `--file` | No | Path to local `.jsonl` file | If specified, runs in file ingestion mode. If omitted, the engine streams inputs directly from Standard Input (`stdin`). |
+| `--map` \| `-m` | No | Comma-separated map (e.g., `aa:ll,bb:kk`) | Dynamically maps arbitrary JSON key names to specific database column names. |
 
 ---
 
@@ -51,6 +52,13 @@ Glacier.Forge checks the execution environment for database connection settings 
 Glacier.Forge is designed to run **dynamically** without needing any manual schema code edits or predefined JSON Schema files:
 * **Dynamic Database Schema Lookup**: At startup, the engine connects to the target database and queries the database catalog (e.g. `INFORMATION_SCHEMA.COLUMNS` in SQL Server, or `pg_catalog` views in Postgres) for the specific table name passed to the `--table` parameter. It resolves column names, exact data types, and nullability, constructing a fast in-memory schema schema map.
 * **Schema-Driven JSON Validation**: The resolved database schema acts as the validation source of truth. As JSON records stream in, the parser dynamically matches the keys against the fetched column map. If a value type mismatches (e.g., a text string sent to an integer column) or a non-nullable column is omitted, the record is rejected, protecting database integrity on-the-fly.
+
+### 3. How JSON vs. Database Schema Mismatches are Handled
+Discrepancies between JSON inputs and the database schema are resolved at runtime as follows:
+* **Different Property Orders**: Glacier.Forge is completely order-independent. It parses key-value pairs sequentially using a case-insensitive ASCII Trie. Whichever order the fields arrive in the JSON line, they are resolved to their matching database columns.
+* **Fewer Fields in JSON (Missing Columns)**: If a database column is absent from the JSON record, the engine maps a `null` value to that column slot. If the column is defined as `NOT NULL` and has no default value, the database driver will reject the record and the engine will flag a validation error.
+* **More Fields in JSON (Superfluous Keys)**: If the JSON contains extra properties that do not exist in the database table schema, the engine's Trie parser fails to find a match and calls `reader.Skip()` to bypass the property name and value without allocating any memory.
+* **Case Mismatches & Collisions**: Keys are matched case-insensitively against the Trie nodes. If a case-sensitive database (like PostgreSQL) has multiple columns that could match (e.g. `columnA` and `COLUMNa`), Glacier.Forge prioritizes a **case-sensitive exact match** first, and falls back to a case-insensitive match only if no exact match is found.
 
 ---
 

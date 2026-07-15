@@ -36,12 +36,26 @@ public sealed class SchemaValidator
 {
     private readonly TrieNode _root = new();
 
-    public void LoadSchema(IEnumerable<ColumnSchema> columns)
+    public void LoadSchema(IEnumerable<ColumnSchema> columns, Dictionary<string, string>? customMappings = null)
     {
+        var columnLookup = new Dictionary<string, ColumnSchema>(StringComparer.OrdinalIgnoreCase);
         foreach (var col in columns)
         {
+            columnLookup[col.ColumnName] = col;
             byte[] bytes = System.Text.Encoding.UTF8.GetBytes(col.ColumnName);
             Insert(bytes, col);
+        }
+
+        if (customMappings != null)
+        {
+            foreach (var (jsonKey, dbColumnName) in customMappings)
+            {
+                if (columnLookup.TryGetValue(dbColumnName, out var colSchema))
+                {
+                    byte[] bytes = System.Text.Encoding.UTF8.GetBytes(jsonKey);
+                    Insert(bytes, colSchema);
+                }
+            }
         }
     }
 

@@ -167,6 +167,59 @@ public class ParserTests
         Assert.Equal(2, sink.WriteCount);
     }
 
+    private class DetailedMockSink : IRelationalSink
+    {
+        public System.Collections.Generic.List<(int index, string value)> Fields { get; } = new();
+        public bool Started { get; set; }
+        public bool Ended { get; set; }
+        public bool Committed { get; set; }
+
+        public Task InitializeAsync(string connectionString, string targetTable, ColumnSchema[] schema) => Task.CompletedTask;
+        public void StartRecord() => Started = true;
+        public void WriteField(int colIndex, ReadOnlySpan<byte> value, ReadOnlySpan<byte> line)
+        {
+            Fields.Add((colIndex, System.Text.Encoding.UTF8.GetString(value)));
+        }
+        public void EndRecord(bool commit, ReadOnlySpan<byte> line) { Ended = true; Committed = commit; }
+        public Task FlushBatchAsync() => Task.CompletedTask;
+        public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+    }
+
+    [Fact]
+    public void TestCustomSchemaMapping()
+    {
+        var validator = new SchemaValidator();
+        var columns = new[]
+        {
+            new ColumnSchema { Index = 0, ColumnName = "UserId", DataType = "integer", IsNullable = false },
+            new ColumnSchema { Index = 1, ColumnName = "FullName", DataType = "varchar", IsNullable = true },
+            new ColumnSchema { Index = 2, ColumnName = "AccountStatus", DataType = "varchar", IsNullable = true }
+        };
+
+        var customMappings = new System.Collections.Generic.Dictionary<string, string>
+        {
+            { "user_id_val", "UserId" },
+            { "name_from_llm", "FullName" },
+            { "status_code", "AccountStatus" }
+        };
+
+        validator.LoadSchema(columns, customMappings);
+
+        var sink = new DetailedMockSink();
+        string inputJson = "{\"user_id_val\": 101, \"name_from_llm\": \"ValB\", \"status_code\": \"ValC\"}";
+        byte[] inputBytes = System.Text.Encoding.UTF8.GetBytes(inputJson);
+
+        bool success = Program.ProcessRecord(inputBytes, sink, validator, columns);
+
+        Assert.True(success);
+        Assert.True(sink.Committed);
+        Assert.Equal(3, sink.Fields.Count);
+
+        Assert.Contains(sink.Fields, f => f.index == 0 && f.value == "101");
+        Assert.Contains(sink.Fields, f => f.index == 1 && f.value == "ValB");
+        Assert.Contains(sink.Fields, f => f.index == 2 && f.value == "ValC");
+    }
+
     [Fact]
     public void TestIngestionPipelineRejectFormatMismatch()
     {
@@ -187,6 +240,62 @@ public class ParserTests
         Assert.True(sink.Started);
         Assert.True(sink.Ended);
         Assert.False(sink.Committed);
+    }
+
+    [Fact]
+    public void TestIngestionPipelineConvertibleTypes()
+    {
+        var validator = new SchemaValidator();
+        var columns = new[]
+        {
+            new ColumnSchema { Index = 0, ColumnName = "id", DataType = "integer", IsNullable = false },
+            new ColumnSchema { Index = 1, ColumnName = "price", DataType = "decimal", IsNullable = true },
+            new ColumnSchema { Index = 2, ColumnName = "ratio", DataType = "double precision", IsNullable = true }
+        };
+        validator.LoadSchema(columns);
+
+        var sink = new DetailedMockSink();
+        // 1. "id" is string "42" (convertible to integer)
+        // 2. "price" is string "12.34" (convertible to decimal)
+        // 3. "ratio" is number 100 (integer convertible to double)
+        string inputJson = "{\"id\": \"42\", \"price\": \"12.34\", \"ratio\": 100}";
+        byte[] inputBytes = System.Text.Encoding.UTF8.GetBytes(inputJson);
+
+        bool success = Program.ProcessRecord(inputBytes, sink, validator, columns);
+
+        Assert.True(success);
+        Assert.True(sink.Committed);
+        Assert.Equal(3, sink.Fields.Count);
+
+        // Verify values are parsed correctly
+        Assert.Contains(sink.Fields, f => f.index == 0 && f.value == "42");
+        Assert.Contains(sink.Fields, f => f.index == 1 && f.value == "12.34");
+        Assert.Contains(sink.Fields, f => f.index == 2 && f.value == "100");
+    }
+
+    [Fact]
+    public void TestIngestionPipelineUnconvertibleTypes()
+    {
+        var validator = new SchemaValidator();
+        var columns = new[]
+        {
+            new ColumnSchema { Index = 0, ColumnName = "id", DataType = "integer", IsNullable = false }
+        };
+        validator.LoadSchema(columns);
+
+        var sink = new MockSink();
+        
+        // 1. Lossy conversion (float 42.5 in integer column)
+        string inputJsonLossy = "{\"id\": 42.5}";
+        byte[] inputBytesLossy = System.Text.Encoding.UTF8.GetBytes(inputJsonLossy);
+        bool successLossy = Program.ProcessRecord(inputBytesLossy, sink, validator, columns);
+        Assert.False(successLossy);
+
+        // 2. Completely unconvertible text in integer column
+        string inputJsonUnconvertible = "{\"id\": \"abc\"}";
+        byte[] inputBytesUnconvertible = System.Text.Encoding.UTF8.GetBytes(inputJsonUnconvertible);
+        bool successUnconvertible = Program.ProcessRecord(inputBytesUnconvertible, sink, validator, columns);
+        Assert.False(successUnconvertible);
     }
 
     [Fact]

@@ -18,6 +18,7 @@ public static class Program
         string? tableName = null;
         string? licenseKey = null;
         string? inputFilePath = null;
+        string? customMapInput = null;
 
         for (int i = 0; i < args.Length; i++)
         {
@@ -38,6 +39,10 @@ public static class Program
                 case "-f" when i + 1 < args.Length:
                 case "--file" when i + 1 < args.Length:
                     inputFilePath = args[++i];
+                    break;
+                case "-m" when i + 1 < args.Length:
+                case "--map" when i + 1 < args.Length:
+                    customMapInput = args[++i];
                     break;
             }
         }
@@ -108,9 +113,24 @@ public static class Program
                 Console.WriteLine($"  [{col.Index}] {col.ColumnName} ({col.DataType}, Nullable={col.IsNullable}, MaxLength={col.MaxLength})");
             }
 
-            // 2. Load Schema into Validator
+            // 2. Parse Custom Mappings
+            var customMappings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (!string.IsNullOrWhiteSpace(customMapInput))
+            {
+                var pairs = customMapInput.Split(',');
+                foreach (var pair in pairs)
+                {
+                    var parts = pair.Split(':');
+                    if (parts.Length == 2)
+                    {
+                        customMappings[parts[0].Trim()] = parts[1].Trim();
+                    }
+                }
+            }
+
+            // 3. Load Schema into Validator
             var validator = new SchemaValidator();
-            validator.LoadSchema(columns);
+            validator.LoadSchema(columns, customMappings);
 
             // 3. Initialize Sink
             IRelationalSink sink = dbType switch
