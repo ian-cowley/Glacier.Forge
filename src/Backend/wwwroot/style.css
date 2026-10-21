@@ -399,3 +399,12 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text-primary);
     font-weight: 600;
 }
+
+.border-cyan-glow {
+    border-color: rgba(102, 252, 241, 0.3) !important;
+    box-shadow: 0 4px 20px rgba(102, 252, 241, 0.08);
+}
+
+.bg-dark-accent {
+    background-color: var(--bg-secondary);
+}

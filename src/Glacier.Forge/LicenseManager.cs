@@ -33,8 +33,8 @@ public partial class LicenseJsonContext : JsonSerializerContext
 
 public static class LicenseManager
 {
-    // The ECDSA P-256 Public Key (Hardcoded from backend generator)
-    private const string PublicKeyPem = """
+    // The ECDSA P-256 Public Key (Hardcoded from backend generator, overridable in tests)
+    public static string PublicKeyPem { get; set; } = """
         -----BEGIN PUBLIC KEY-----
         MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEAYi0Rd9z6VfH5oLYXMGB6QBPDA25
         2E7Ip3YFm7BQklK+Pelu4BVlRWYmAGH7YgmKqyiPLSxFuQBr/wRvBOxwJA==

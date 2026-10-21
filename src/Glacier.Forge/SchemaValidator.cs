@@ -122,6 +122,14 @@ public sealed class SchemaValidator
                 }
                 return System.Buffers.Text.Utf8Parser.TryParse(reader.ValueSpan, out int _, out _);
 
+            case "smallint":
+            case "int2":
+                if (reader.TokenType == JsonTokenType.Number)
+                {
+                    return reader.TryGetInt16(out _);
+                }
+                return System.Buffers.Text.Utf8Parser.TryParse(reader.ValueSpan, out short _, out _);
+
             case "bigint":
             case "int8":
                 if (reader.TokenType == JsonTokenType.Number)
@@ -129,6 +137,15 @@ public sealed class SchemaValidator
                     return reader.TryGetInt64(out _);
                 }
                 return System.Buffers.Text.Utf8Parser.TryParse(reader.ValueSpan, out long _, out _);
+
+            case "uuid":
+            case "uniqueidentifier":
+            case "guid":
+                if (reader.TokenType == JsonTokenType.String)
+                {
+                    return reader.TryGetGuid(out _);
+                }
+                return System.Buffers.Text.Utf8Parser.TryParse(reader.ValueSpan, out Guid _, out _);
 
             case "varchar":
             case "nvarchar":
@@ -144,12 +161,17 @@ public sealed class SchemaValidator
             case "timestamp without time zone":
             case "timestamp with time zone":
             case "timestamptz":
+            case "date":
                 if (reader.TokenType == JsonTokenType.String || reader.TokenType == JsonTokenType.PropertyName)
                 {
                     return reader.TryGetDateTime(out _);
                 }
                 return System.Buffers.Text.Utf8Parser.TryParse(reader.ValueSpan, out DateTime _, out _, 'O') ||
                        System.Buffers.Text.Utf8Parser.TryParse(reader.ValueSpan, out DateTime _, out _);
+
+            case "json":
+            case "jsonb":
+                return true;
 
             case "boolean":
             case "bool":

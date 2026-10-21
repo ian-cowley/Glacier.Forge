@@ -50,8 +50,14 @@ public static class HybridIoDispatcher
                 FileOptions.SequentialScan
             );
 
-            int bytesRead = RandomAccess.Read(handle, rented.AsSpan(0, length), 0);
-            processor(rented.AsSpan(0, bytesRead));
+            int totalBytesRead = 0;
+            while (totalBytesRead < length)
+            {
+                int bytesRead = RandomAccess.Read(handle, rented.AsSpan(totalBytesRead, length - totalBytesRead), totalBytesRead);
+                if (bytesRead == 0) break;
+                totalBytesRead += bytesRead;
+            }
+            processor(rented.AsSpan(0, totalBytesRead));
         }
         finally
         {
@@ -80,7 +86,7 @@ public static class HybridIoDispatcher
                 long capacity = accessor.Capacity;
 
                 // ReadOnlySpan length is limited to int.MaxValue (2GB).
-                // If the capacity exceeds this, we process the file in 1GB blocks.
+                // If capacity is within int.MaxValue, process in one contiguous span.
                 if (capacity <= int.MaxValue)
                 {
                     var fileData = new ReadOnlySpan<byte>(start, (int)capacity);
@@ -88,16 +94,34 @@ public static class HybridIoDispatcher
                 }
                 else
                 {
-                    const int maxSpanChunk = 1024 * 1024 * 1024; // 1 GB chunks
+                    const int maxSpanChunk = 1024 * 1024 * 1024; // 1 GB target block
                     long remaining = capacity;
                     long offset = 0;
                     while (remaining > 0)
                     {
-                        int currentChunkSize = (int)Math.Min(remaining, maxSpanChunk);
-                        var fileData = new ReadOnlySpan<byte>(start + offset, currentChunkSize);
-                        processor(fileData);
-                        offset += currentChunkSize;
-                        remaining -= currentChunkSize;
+                        if (remaining <= maxSpanChunk)
+                        {
+                            var fileData = new ReadOnlySpan<byte>(start + offset, (int)remaining);
+                            processor(fileData);
+                            break;
+                        }
+
+                        // Search backwards from maxSpanChunk for the last newline to preserve JSON lines
+                        int candidateChunk = maxSpanChunk;
+                        while (candidateChunk > 0 && *(start + offset + candidateChunk - 1) != (byte)'\n')
+                        {
+                            candidateChunk--;
+                        }
+
+                        if (candidateChunk == 0)
+                        {
+                            candidateChunk = maxSpanChunk;
+                        }
+
+                        var fileDataChunk = new ReadOnlySpan<byte>(start + offset, candidateChunk);
+                        processor(fileDataChunk);
+                        offset += candidateChunk;
+                        remaining -= candidateChunk;
                     }
                 }
             }

@@ -8,13 +8,13 @@ namespace Glacier.Forge.Tests;
 
 public class ParserTests
 {
-    private const string PrivateKeyPem = """
-        -----BEGIN PRIVATE KEY-----
-        MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgnMFp5q5+Th/AiczT
-        G8wJhb1O50Bf6r0OAydOzJVpXtChRANCAAQBiLRF33PpV8fmgthcwYHpAE8MDbnY
-        TsindgWbsFCSUr496W7gFWVFZiYAYftiCYqrKI8tLEW5AGv/BG8E7HAk
-        -----END PRIVATE KEY-----
-        """;
+    // Ephemeral in-memory key pair generated dynamically at test runtime (NO static private key)
+    private static readonly System.Security.Cryptography.ECDsa _testEcdsa = System.Security.Cryptography.ECDsa.Create();
+
+    static ParserTests()
+    {
+        LicenseManager.PublicKeyPem = _testEcdsa.ExportSubjectPublicKeyInfoPem();
+    }
 
     private static string GenerateLicenseKey(string email, string tier, DateTime subscriptionEnd, string product = "Glacier.Forge")
     {
@@ -33,10 +33,7 @@ public class ParserTests
         byte[] payloadBytes = System.Text.Encoding.UTF8.GetBytes(jsonPayload);
         string payloadBase64 = Convert.ToBase64String(payloadBytes);
 
-        using var ecdsa = System.Security.Cryptography.ECDsa.Create();
-        ecdsa.ImportFromPem(PrivateKeyPem);
-
-        byte[] signatureBytes = ecdsa.SignData(
+        byte[] signatureBytes = _testEcdsa.SignData(
             payloadBytes,
             System.Security.Cryptography.HashAlgorithmName.SHA256,
             System.Security.Cryptography.DSASignatureFormat.IeeeP1363FixedFieldConcatenation);
@@ -368,10 +365,7 @@ public class ParserTests
         byte[] payloadBytes = System.Text.Encoding.UTF8.GetBytes(payloadJson);
         string payloadBase64 = Convert.ToBase64String(payloadBytes);
 
-        using var ecdsa = System.Security.Cryptography.ECDsa.Create();
-        ecdsa.ImportFromPem(PrivateKeyPem);
-
-        byte[] signatureBytes = ecdsa.SignData(
+        byte[] signatureBytes = _testEcdsa.SignData(
             payloadBytes,
             System.Security.Cryptography.HashAlgorithmName.SHA256,
             System.Security.Cryptography.DSASignatureFormat.IeeeP1363FixedFieldConcatenation);

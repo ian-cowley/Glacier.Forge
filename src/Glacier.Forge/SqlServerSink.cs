@@ -18,10 +18,20 @@ public sealed class SqlServerSink : IRelationalSink
     private int _currentRecordIndex = 0;
     private bool _isRecordActive = false;
 
+    private enum FieldLiteralKind : byte
+    {
+        None = 0,
+        Slice = 1,
+        True = 2,
+        False = 3,
+        Null = 4
+    }
+
     // Per-record field buffering offsets to handle out-of-order and missing JSON fields
     private int[] _fieldOffsets = null!;
     private int[] _fieldLengths = null!;
     private bool[] _fieldPresent = null!;
+    private FieldLiteralKind[] _fieldKinds = null!;
 
     public async Task InitializeAsync(string connectionString, string targetTable, ColumnSchema[] schema)
     {
@@ -32,6 +42,7 @@ public sealed class SqlServerSink : IRelationalSink
         _fieldOffsets = new int[schema.Length];
         _fieldLengths = new int[schema.Length];
         _fieldPresent = new bool[schema.Length];
+        _fieldKinds = new FieldLiteralKind[schema.Length];
 
         _connection = new SqlConnection(connectionString);
         await _connection.OpenAsync();
@@ -40,6 +51,7 @@ public sealed class SqlServerSink : IRelationalSink
     public void StartRecord()
     {
         Array.Clear(_fieldPresent, 0, _fieldPresent.Length);
+        Array.Clear(_fieldKinds, 0, _fieldKinds.Length);
         _isRecordActive = true;
     }
 
@@ -48,15 +60,47 @@ public sealed class SqlServerSink : IRelationalSink
         if (!_isRecordActive)
             throw new InvalidOperationException("No active record. Call StartRecord first.");
 
+        if (value.SequenceEqual("true"u8))
+        {
+            _fieldKinds[colIndex] = FieldLiteralKind.True;
+            _fieldPresent[colIndex] = true;
+            return;
+        }
+
+        if (value.SequenceEqual("false"u8))
+        {
+            _fieldKinds[colIndex] = FieldLiteralKind.False;
+            _fieldPresent[colIndex] = true;
+            return;
+        }
+
+        if (value.IsEmpty || value.SequenceEqual("null"u8))
+        {
+            _fieldKinds[colIndex] = FieldLiteralKind.Null;
+            _fieldPresent[colIndex] = true;
+            return;
+        }
+
         unsafe
         {
             fixed (byte* pLine = line)
             fixed (byte* pVal = value)
             {
                 long diff = pVal - pLine;
-                _fieldOffsets[colIndex] = (int)diff;
-                _fieldLengths[colIndex] = value.Length;
-                _fieldPresent[colIndex] = true;
+                if (diff >= 0 && diff + value.Length <= line.Length)
+                {
+                    _fieldOffsets[colIndex] = (int)diff;
+                    _fieldLengths[colIndex] = value.Length;
+                    _fieldKinds[colIndex] = FieldLiteralKind.Slice;
+                    _fieldPresent[colIndex] = true;
+                }
+                else
+                {
+                    _fieldKinds[colIndex] = FieldLiteralKind.Slice;
+                    _fieldOffsets[colIndex] = 0;
+                    _fieldLengths[colIndex] = 0;
+                    _fieldPresent[colIndex] = true;
+                }
             }
         }
     }
@@ -74,7 +118,37 @@ public sealed class SqlServerSink : IRelationalSink
         // Process buffered fields for the current row in schema order
         for (int i = 0; i < _schema.Length; i++)
         {
-            if (!_fieldPresent[i])
+            if (!_fieldPresent[i] || _fieldKinds[i] == FieldLiteralKind.Null)
+            {
+                _dataReader.SetNull(i, _currentRecordIndex);
+                continue;
+            }
+
+            string type = _schema[i].DataTypeLower;
+
+            if (_fieldKinds[i] == FieldLiteralKind.True)
+            {
+                if (type is "boolean" or "bool" or "bit")
+                    _dataReader.SetValue(i, _currentRecordIndex, true);
+                else if (type is "int" or "integer" or "int4" or "smallint" or "int2")
+                    _dataReader.SetValue(i, _currentRecordIndex, 1);
+                else
+                    _dataReader.SetString(i, _currentRecordIndex, "true"u8);
+                continue;
+            }
+
+            if (_fieldKinds[i] == FieldLiteralKind.False)
+            {
+                if (type is "boolean" or "bool" or "bit")
+                    _dataReader.SetValue(i, _currentRecordIndex, false);
+                else if (type is "int" or "integer" or "int4" or "smallint" or "int2")
+                    _dataReader.SetValue(i, _currentRecordIndex, 0);
+                else
+                    _dataReader.SetString(i, _currentRecordIndex, "false"u8);
+                continue;
+            }
+
+            if (_fieldOffsets[i] < 0 || _fieldOffsets[i] + _fieldLengths[i] > line.Length)
             {
                 _dataReader.SetNull(i, _currentRecordIndex);
                 continue;
@@ -82,14 +156,12 @@ public sealed class SqlServerSink : IRelationalSink
 
             ReadOnlySpan<byte> valSpan = line.Slice(_fieldOffsets[i], _fieldLengths[i]);
 
-            if (valSpan.IsEmpty || 
-                valSpan.SequenceEqual("null"u8))
+            if (valSpan.IsEmpty || valSpan.SequenceEqual("null"u8))
             {
                 _dataReader.SetNull(i, _currentRecordIndex);
                 continue;
             }
 
-            string type = _schema[i].DataTypeLower;
             switch (type)
             {
                 case "int":
@@ -101,10 +173,27 @@ public sealed class SqlServerSink : IRelationalSink
                         _dataReader.SetNull(i, _currentRecordIndex);
                     break;
 
+                case "smallint":
+                case "int2":
+                    if (System.Buffers.Text.Utf8Parser.TryParse(valSpan, out short shortVal, out _))
+                        _dataReader.SetValue(i, _currentRecordIndex, shortVal);
+                    else
+                        _dataReader.SetNull(i, _currentRecordIndex);
+                    break;
+
                 case "bigint":
                 case "int8":
                     if (System.Buffers.Text.Utf8Parser.TryParse(valSpan, out long longVal, out _))
                         _dataReader.SetValue(i, _currentRecordIndex, longVal);
+                    else
+                        _dataReader.SetNull(i, _currentRecordIndex);
+                    break;
+
+                case "uniqueidentifier":
+                case "guid":
+                case "uuid":
+                    if (System.Buffers.Text.Utf8Parser.TryParse(valSpan, out Guid guidVal, out _))
+                        _dataReader.SetValue(i, _currentRecordIndex, guidVal);
                     else
                         _dataReader.SetNull(i, _currentRecordIndex);
                     break;
@@ -134,6 +223,7 @@ public sealed class SqlServerSink : IRelationalSink
                 case "datetime2":
                 case "timestamp":
                 case "timestamp without time zone":
+                case "date":
                     if (System.Buffers.Text.Utf8Parser.TryParse(valSpan, out DateTime dtVal, out _, 'O'))
                     {
                         _dataReader.SetValue(i, _currentRecordIndex, dtVal);
@@ -175,7 +265,7 @@ public sealed class SqlServerSink : IRelationalSink
                         _dataReader.SetNull(i, _currentRecordIndex);
                     break;
 
-                default: // varchar, nvarchar, text
+                default: // varchar, nvarchar, text, json, jsonb
                     _dataReader.SetString(i, _currentRecordIndex, valSpan);
                     break;
             }
@@ -233,7 +323,7 @@ public sealed class PooledBatchDataReader : DbDataReader
     private readonly Array[] _columnBuffers;
     private readonly bool[][] _nullIndicators;
 
-    private readonly char[] _stringBuffer;
+    private char[] _stringBuffer;
     private int _stringBufferOffset;
     private readonly int[][] _stringOffsets;
     private readonly int[][] _stringLengths;
@@ -261,9 +351,11 @@ public sealed class PooledBatchDataReader : DbDataReader
             _columnBuffers[i] = type switch
             {
                 "int" or "integer" or "int4" => new int[maxBatchSize],
+                "smallint" or "int2" => new short[maxBatchSize],
                 "bigint" or "int8" => new long[maxBatchSize],
+                "uniqueidentifier" or "guid" or "uuid" => new Guid[maxBatchSize],
                 "boolean" or "bool" or "bit" => new bool[maxBatchSize],
-                "datetime" or "datetime2" or "timestamp" or "timestamp without time zone" => new DateTime[maxBatchSize],
+                "datetime" or "datetime2" or "timestamp" or "timestamp without time zone" or "date" => new DateTime[maxBatchSize],
                 "float" or "double precision" => new double[maxBatchSize],
                 "decimal" or "numeric" => new decimal[maxBatchSize],
                 _ => Array.Empty<string>() // empty placeholder for string types
@@ -306,7 +398,10 @@ public sealed class PooledBatchDataReader : DbDataReader
         int charCount = System.Text.Encoding.UTF8.GetCharCount(value);
         if (_stringBufferOffset + charCount > _stringBuffer.Length)
         {
-            throw new InvalidOperationException("PooledBatchDataReader string buffer overflow.");
+            int newCapacity = Math.Max(_stringBuffer.Length * 2, _stringBufferOffset + charCount + 8192);
+            char[] newBuf = new char[newCapacity];
+            Array.Copy(_stringBuffer, 0, newBuf, 0, _stringBufferOffset);
+            _stringBuffer = newBuf;
         }
 
         int written = System.Text.Encoding.UTF8.GetChars(value, _stringBuffer.AsSpan(_stringBufferOffset));
@@ -325,7 +420,9 @@ public sealed class PooledBatchDataReader : DbDataReader
     public override bool IsDBNull(int ordinal) => _nullIndicators[ordinal][_currentRow];
 
     public override int GetInt32(int ordinal) => ((int[])_columnBuffers[ordinal])[_currentRow];
+    public override short GetInt16(int ordinal) => ((short[])_columnBuffers[ordinal])[_currentRow];
     public override long GetInt64(int ordinal) => ((long[])_columnBuffers[ordinal])[_currentRow];
+    public override Guid GetGuid(int ordinal) => ((Guid[])_columnBuffers[ordinal])[_currentRow];
     public override bool GetBoolean(int ordinal) => ((bool[])_columnBuffers[ordinal])[_currentRow];
     public override DateTime GetDateTime(int ordinal) => ((DateTime[])_columnBuffers[ordinal])[_currentRow];
     public override double GetDouble(int ordinal) => ((double[])_columnBuffers[ordinal])[_currentRow];
@@ -347,9 +444,11 @@ public sealed class PooledBatchDataReader : DbDataReader
         return type switch
         {
             "int" or "integer" or "int4" => GetInt32(ordinal),
+            "smallint" or "int2" => GetInt16(ordinal),
             "bigint" or "int8" => GetInt64(ordinal),
+            "uniqueidentifier" or "guid" or "uuid" => GetGuid(ordinal),
             "boolean" or "bool" or "bit" => GetBoolean(ordinal),
-            "datetime" or "datetime2" or "timestamp" or "timestamp without time zone" => GetDateTime(ordinal),
+            "datetime" or "datetime2" or "timestamp" or "timestamp without time zone" or "date" => GetDateTime(ordinal),
             "float" or "double precision" => GetDouble(ordinal),
             "decimal" or "numeric" => GetDecimal(ordinal),
             _ => GetSqlChars(ordinal) // Return reusable SqlChars wrapper to avoid string allocations
@@ -433,7 +532,5 @@ public sealed class PooledBatchDataReader : DbDataReader
     public override long GetBytes(int ordinal, long dataOffset, byte[]? buffer, int bufferOffset, int length) => throw new NotSupportedException();
     public override char GetChar(int ordinal) => throw new NotSupportedException();
     public override long GetChars(int ordinal, long dataOffset, char[]? buffer, int bufferOffset, int length) => throw new NotSupportedException();
-    public override Guid GetGuid(int ordinal) => throw new NotSupportedException();
-    public override short GetInt16(int ordinal) => throw new NotSupportedException();
     public override float GetFloat(int ordinal) => throw new NotSupportedException();
 }

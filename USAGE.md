@@ -109,25 +109,14 @@ Glacier.Forge --db sqlserver --table dbo.billing_history --file C:\backups\2026_
 
 ---
 
-## Licensing Setup
+## Licensing & Open-Source Model
 
-Glacier.Forge requires an ECDSA signed license key to run. 
+Glacier.Forge is **100% Free and Open-Source under the MIT License**. No license key is required to run in production.
 
-### 1. Environment Variable (Recommended for production)
-Set the license key as an environment variable:
-```bash
-# Windows (PowerShell)
-$env:GLACIER_LICENSE="<base64_payload>.<base64_signature>"
-
-# Linux / macOS
-export GLACIER_LICENSE="<base64_payload>.<base64_signature>"
-```
-
-### 2. Local License File
-Create a file named `license.lic` in the execution directory containing the raw license key:
-```text
-eyJQaW5nIjogIm9rIn0=.MEUCIQ...
-```
+If your enterprise environment requires cryptographic provenance or compliance audit tracking, you can optionally supply an ECDSA license key:
+* Via CLI: `--key "<key>"`
+* Via Environment Variable: `$env:GLACIER_LICENSE="<key>"`
+* Via Local File: placing `license.lic` in the working directory
 
 ---
 

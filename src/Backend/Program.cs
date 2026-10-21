@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Hosting;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -17,9 +18,29 @@ public static class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        // Dynamic Port Binding for Cloud Run
+        var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+        builder.WebHost.UseUrls($"http://*:{port}");
+
         var app = builder.Build();
         app.UseDefaultFiles();
         app.UseStaticFiles();
+
+        // Health check / Website root endpoint
+        app.MapGet("/", (HttpContext context) =>
+        {
+            var accept = context.Request.Headers.Accept.ToString();
+            if (accept.Contains("text/html", StringComparison.OrdinalIgnoreCase))
+            {
+                var filePath = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "index.html");
+                if (File.Exists(filePath))
+                {
+                    return Results.File(filePath, "text/html");
+                }
+            }
+            return Results.Ok("Glacier API Online");
+        });
 
         app.MapPost("/webhooks/lemonsqueezy", async (HttpRequest request, IConfiguration config) =>
         {
@@ -61,7 +82,8 @@ public static class Program
                 DateTime subscriptionEnd = DateTime.UtcNow.AddYears(1); 
 
                 // 4. Generate the License Key
-                string privateKeyPem = config["LicenseSettings:PrivateKeyPem"] ?? throw new InvalidOperationException("Missing PrivateKeyPem configuration.");
+                string privateKeyPem = Environment.GetEnvironmentVariable("ECDSA_PRIVATE_KEY") 
+                    ?? throw new InvalidOperationException("Missing ECDSA_PRIVATE_KEY environment variable.");
                 string licenseKey = GenerateLicenseKey(product, email, tier, subscriptionEnd, privateKeyPem);
 
                 // 5. Deliver the Key

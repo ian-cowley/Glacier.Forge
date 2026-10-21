@@ -24,45 +24,58 @@ public static class Program
         {
             switch (args[i])
             {
-                case "-db" when i + 1 < args.Length:
+                case "--help" or "-h" or "-?":
+                    PrintHelp();
+                    return 0;
+                case "--db" or "-db" when i + 1 < args.Length:
                     dbTypeInput = args[++i];
                     break;
-                case "-c" when i + 1 < args.Length:
+                case "--conn" or "--connection" or "-c" when i + 1 < args.Length:
                     connString = args[++i];
                     break;
-                case "-t" when i + 1 < args.Length:
+                case "--table" or "-t" when i + 1 < args.Length:
                     tableName = args[++i];
                     break;
-                case "-k" when i + 1 < args.Length:
+                case "--key" or "-k" when i + 1 < args.Length:
                     licenseKey = args[++i];
                     break;
-                case "-f" when i + 1 < args.Length:
-                case "--file" when i + 1 < args.Length:
+                case "--file" or "-f" when i + 1 < args.Length:
                     inputFilePath = args[++i];
                     break;
-                case "-m" when i + 1 < args.Length:
-                case "--map" when i + 1 < args.Length:
+                case "--map" or "-m" when i + 1 < args.Length:
                     customMapInput = args[++i];
                     break;
             }
         }
 
+        // Check environment variable or license file if not passed via CLI
         if (string.IsNullOrWhiteSpace(licenseKey))
         {
-            Console.Error.WriteLine("Error: Missing license key (-k).");
-            return 1;
+            licenseKey = Environment.GetEnvironmentVariable("GLACIER_LICENSE");
+        }
+        if (string.IsNullOrWhiteSpace(licenseKey) && System.IO.File.Exists("license.lic"))
+        {
+            try { licenseKey = System.IO.File.ReadAllText("license.lic").Trim(); } catch { }
         }
 
-        // --- THE LICENSE GATE ---
-        if (!LicenseManager.ValidateLicense(licenseKey))
+        // Glacier.Forge is 100% Free and Open-Source under the MIT license.
+        // Optional verification if an enterprise audit key is supplied:
+        if (!string.IsNullOrWhiteSpace(licenseKey))
         {
-            return 1; // Exit immediately if validation fails
+            if (!LicenseManager.ValidateLicense(licenseKey))
+            {
+                return 1;
+            }
+        }
+        else
+        {
+            Console.WriteLine("Glacier.Forge: Running in Free & Open-Source Mode (MIT).");
         }
 
         if (string.IsNullOrWhiteSpace(dbTypeInput) || string.IsNullOrWhiteSpace(tableName))
         {
             Console.Error.WriteLine("Error: Missing required database arguments.");
-            Console.Error.WriteLine("Usage: dotnet run -- -k \"license_key\" -db [sqlserver|postgres|pg] [-c \"connection_string\"] -t \"table_name\"");
+            PrintHelp();
             return 1;
         }
 
@@ -614,5 +627,25 @@ public static class Program
         }
 
         return connStr;
+    }
+
+    private static void PrintHelp()
+    {
+        Console.WriteLine("""
+        Glacier.Forge - Zero-Allocation Streaming Ingestion Engine
+        100% Free and Open-Source under the MIT License.
+
+        Usage:
+          Glacier.Forge --db <sqlserver|postgres> --table <schema.table_name> [options]
+
+        Options:
+          --db, -db <sqlserver|postgres|pg>        Target database engine (Required)
+          --table, -t <table_name>                 Target table name (e.g. dbo.users or public.users) (Required)
+          --conn, --connection, -c <conn_string>   Database connection string (falls back to config/secrets)
+          --file, -f <file_path>                   JSONL file path (if omitted, streams from stdin)
+          --map, -m <json_key:col_name,...>        Map arbitrary JSON property names to DB columns
+          --key, -k <license_key>                  Optional enterprise audit license key
+          --help, -h                               Display this help information
+        """);
     }
 }

@@ -1,8 +1,64 @@
 # Glacier.Forge
 
-A zero-allocation, high-performance C# ingestion engine that parses semantic JSONL tokens stream and bulk-loads them directly into SQL Server and PostgreSQL databases.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Support-orange.svg?logo=buy-me-a-coffee)](https://buymeacoffee.com/glaciersoftware)
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support-ff5e5b.svg?logo=ko-fi)](https://ko-fi.com/glaciersoftware)
+
+A zero-allocation, high-performance C# ingestion engine that parses semantic JSONL token streams and bulk-loads them directly into SQL Server and PostgreSQL databases.
 
 Designed for performance-critical scenarios (such as receiving high-velocity LLM token generation pipelines), this engine maintains a **0-byte managed memory allocation** hot path, neutralizing Garbage Collector pause latencies.
+
+**100% Free & Open-Source under the MIT License.**
+
+---
+
+## Features
+
+* **Zero-Allocation Hot Path**: Slices raw UTF-8 `ReadOnlySpan<byte>` tokens without C# UTF-16 character string conversions or GC heap pressure.
+* **Byte-Space Trie Schema Validator**: $O(L)$ column lookup with ASCII bit-shift case insensitivity.
+* **Direct Relational Sinks**:
+  * **PostgreSQL**: High-speed binary `COPY ... FROM STDIN (FORMAT BINARY)` over raw UTF-8 memory buffers.
+  * **SQL Server**: Custom `PooledBatchDataReader : DbDataReader` with zero-allocation `SqlChars` wrappers feeding `SqlBulkCopy`.
+* **Zero-Copy Hybrid I/O**: Direct `RandomAccess` for small files (< 1MB) and line-aligned `MemoryMappedFile` memory views for multi-gigabyte files.
+* **Expanded Data Types**: Full native support for `int`, `smallint`, `bigint`, `uuid`/`guid`, `bool`, `datetime`, `date`, `float`, `decimal`, `json`/`jsonb`, and `varchar`/`text`.
+
+---
+
+## Quickstart
+
+### Ingesting via Standard Input (`stdin`)
+```bash
+# Pipe streaming records directly into PostgreSQL
+python stream_llm.py | Glacier.Forge --db postgres --table public.ai_events
+```
+
+### Ingesting Local Files (Hybrid I/O)
+```bash
+# Bulk load a JSONL file directly into SQL Server
+Glacier.Forge --db sqlserver --table dbo.customers --file C:\data\customers.jsonl
+```
+
+### Command Line Arguments
+```bash
+Glacier.Forge --db <sqlserver|postgres> --table <table_name> [options]
+```
+
+| Flag | Required | Description |
+| :--- | :--- | :--- |
+| `--db`, `-db` | **Yes** | Target database: `sqlserver` or `postgres` (`pg`). |
+| `--table`, `-t` | **Yes** | Destination table (e.g. `dbo.events` or `public.events`). |
+| `--conn`, `-c` | No | Database connection string (defaults to `appsettings.json` / user-secrets). |
+| `--file`, `-f` | No | Path to local `.jsonl` file. If omitted, streams from `stdin`. |
+| `--map`, `-m` | No | Comma-separated dynamic field mappings (e.g. `raw_col:DbCol,ai_id:UserId`). |
+| `--help`, `-h` | No | Display help information. |
+
+---
+
+## Support Open Source Development
+Glacier.Forge and the Glacier ecosystem are 100% free and open-source. If Glacier saves your team compute hours or database costs, consider supporting development:
+* **Buy Me a Coffee**: [buymeacoffee.com/glaciersoftware](https://buymeacoffee.com/glaciersoftware) (Supports UK & Global GBP/USD)
+* **Ko-fi**: [ko-fi.com/glaciersoftware](https://ko-fi.com/glaciersoftware) (UK-headquartered, 0% platform fee)
+* **GitHub Sponsors**: [github.com/sponsors/ian-cowley](https://github.com/sponsors/ian-cowley)
 
 ---
 

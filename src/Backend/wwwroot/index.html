@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Glacier Software - High-performance developer tooling and zero-allocation libraries for .NET 10.">
-    <title>Glacier Software | High-Performance Developer Tooling</title>
+    <meta name="description" content="Glacier Software - High-performance, zero-allocation developer tooling and data engines for .NET 10. 100% Free & Open Source.">
+    <title>Glacier Software | High-Performance .NET 10 Open Source Tooling</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
@@ -30,12 +30,21 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="#hero">Forge</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#features">Architecture</a></li>
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="#flagships">Flagships</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#ecosystem">Ecosystem</a></li>
                     <li class="nav-item"><a class="nav-link" href="#docs">Documentation</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#open-source">Open Source</a></li>
-                    <li class="nav-item"><a class="nav-link btn btn-outline-cyan ms-lg-3" href="mailto:support@glaciersoftware.dev">Get Support</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#support">Sponsor / Coffee</a></li>
+                    <li class="nav-item ms-lg-2">
+                        <a class="nav-link btn btn-sm btn-outline-cyan px-3 py-1" href="https://github.com/ian-cowley" target="_blank">
+                            <i class="fa-brands fa-github me-1"></i> GitHub
+                        </a>
+                    </li>
+                    <li class="nav-item ms-lg-2">
+                        <a class="nav-link btn btn-sm btn-warning text-dark fw-bold px-3 py-1" href="https://buymeacoffee.com/glaciersoftware" target="_blank">
+                            <i class="fa-solid fa-mug-hot me-1"></i> Buy Me a Coffee
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -45,16 +54,17 @@
     <section id="hero" class="hero-section">
         <div class="container">
             <div class="row align-items-center min-vh-75 py-5">
-                <div class="col-lg-5 text-start">
-                    <div class="badge-accent mb-3"><i class="fa-solid fa-bolt me-1"></i> Flagship Release v1.0</div>
-                    <h1 class="hero-title mb-3">Glacier.<span class="text-cyan">Forge</span></h1>
-                    <p class="hero-subtitle mb-4">The ultimate Semantic-to-Relational Hardener. Map and validate non-deterministic LLM JSON outputs directly into SQL Server and PostgreSQL at <span class="highlight-cyan">146μs speeds</span> with <span class="highlight-cyan">0-byte heap allocations</span>.</p>
+                <div class="col-lg-6 text-start">
+                    <div class="badge-accent mb-3"><i class="fa-solid fa-unlock me-1"></i> 100% Free &amp; Open Source (MIT)</div>
+                    <h1 class="hero-title mb-3">Extreme Performance <br><span class="text-cyan">Zero-Allocation</span> .NET 10</h1>
+                    <p class="hero-subtitle mb-4">A complete ecosystem of high-throughput data engines, SIMD-accelerated DataFrames, local AI inference, and streaming hardeners designed from the ground up for zero GC latency.</p>
                     <div class="d-flex flex-wrap gap-3">
-                        <a href="https://checkout.lemonsqueezy.com/checkout/buy/glacier-forge" class="btn btn-cyan btn-lg"><i class="fa-solid fa-cart-shopping me-2"></i>Buy Now $79/year</a>
-                        <a href="#docs" class="btn btn-outline-secondary btn-lg">Explore Docs</a>
+                        <a href="#flagships" class="btn btn-cyan btn-lg"><i class="fa-solid fa-layer-group me-2"></i>Explore Flagships</a>
+                        <a href="https://github.com/ian-cowley" target="_blank" class="btn btn-outline-secondary btn-lg"><i class="fa-brands fa-github me-2"></i>GitHub Repositories</a>
+                        <a href="https://buymeacoffee.com/glaciersoftware" target="_blank" class="btn btn-warning btn-lg text-dark fw-bold"><i class="fa-solid fa-mug-hot me-2"></i>Buy Me a Coffee</a>
                     </div>
                 </div>
-                <div class="col-lg-7 mt-5 mt-lg-0 text-center">
+                <div class="col-lg-6 mt-5 mt-lg-0 text-center">
                     <div class="code-terminal">
                         <div class="terminal-header d-flex justify-content-between align-items-center px-3 py-2">
                             <div class="d-flex gap-1.5">
@@ -62,19 +72,21 @@
                                 <span class="dot dot-yellow"></span>
                                 <span class="dot dot-green"></span>
                             </div>
-                            <span class="terminal-title">benchmark_summary.txt</span>
+                            <span class="terminal-title">glacier_benchmarks.txt</span>
                         </div>
                         <div class="terminal-body p-3 text-start">
-                            <pre class="mb-0"><code><span class="text-secondary">// BenchmarkDotNet v0.15.8</span>
+                            <pre class="mb-0"><code><span class="text-secondary">// BenchmarkDotNet .NET 10.0 Release (AOT / SIMD)</span>
 <span class="text-cyan">AMD Ryzen AI 9 HX 370 @ 2.00GHz</span>
 
-| Method                         | Mean     | Error   | StdDev  | Gen0   | Allocated |
-|:------------------------------ |---------:|--------:|--------:|-------:|----------:|
-| <span class="text-green">BenchmarkCustomZeroAllocParser</span> | <span class="text-white">144.8 μs</span> | 1.96 μs | 1.83 μs |      - |       <span class="text-green">0 B</span> |
-| BenchmarkSystemTextJson        | 121.2 μs | 2.32 μs | 2.17 μs | 4.7607 |   40000 B |
+| Benchmark Suite                | Throughput / Latency | Managed Memory |
+|:------------------------------ |---------------------:|---------------:|
+| <span class="text-green">Glacier.Polaris (DataFrame)</span>    | <span class="text-white">12.4M rows/sec</span>       |            <span class="text-green">0 B</span> |
+| <span class="text-green">Glacier.Forge (JSONL Hardener)</span> | <span class="text-white">144.8 μs / 1k</span>         |            <span class="text-green">0 B</span> |
+| <span class="text-green">Glacier.Vector (Cosine Sim)</span>    | <span class="text-white">2.8B floats/sec</span>      |            <span class="text-green">0 B</span> |
+| <span class="text-green">Glacier.Chrono (Gorilla TS)</span>    | <span class="text-white">18.2M pts/sec</span>        |            <span class="text-green">0 B</span> |
 
-<span class="text-cyan">Status:</span> 0 managed heap allocations (measured over 1,000 records).
-<span class="text-cyan">Safety:</span> Native AOT compiled, ECDSA signed.</code></pre>
+<span class="text-cyan">License:</span> 100% Free &amp; Open Source under MIT
+<span class="text-cyan">Architecture:</span> Spans, MemoryMappedFiles, SIMD, Native AOT</code></pre>
                         </div>
                     </div>
                 </div>
@@ -82,31 +94,353 @@
         </div>
     </section>
 
-    <!-- Commercial Features Section -->
-    <section id="features" class="features-section py-5">
+    <!-- Flagship Spotlights -->
+    <section id="flagships" class="features-section py-5">
         <div class="container py-5">
-            <h2 class="section-title text-center mb-5">Built for Hardcore <span class="text-cyan">Performance</span></h2>
+            <div class="text-center mb-5">
+                <h2 class="section-title">Ecosystem <span class="text-cyan">Flagships</span></h2>
+                <p class="section-subtitle">The foundational pillars powering modern zero-allocation .NET workloads</p>
+            </div>
+
+            <div class="row g-4 mb-5">
+                <!-- Glacier.Polaris Spotlight -->
+                <div class="col-lg-6">
+                    <div class="feature-card h-100 p-4 border border-cyan-glow">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-primary text-white px-3 py-1">Flagship #1 &bull; Analytics</span>
+                            <a href="https://github.com/ian-cowley/Glacier.Polaris" target="_blank" class="text-cyan"><i class="fa-brands fa-github fa-lg"></i></a>
+                        </div>
+                        <h3 class="h2 mb-3">Glacier.<span class="text-cyan">Polaris</span></h3>
+                        <p class="lead text-light mb-3">The lightning-fast, strongly-typed C# DataFrame engine inspired by Python Polars.</p>
+                        <p class="text-secondary mb-4">Combines columnar in-memory architecture, AVX-512 / ARM Neon SIMD vectorized kernels, lazy execution graphs, and zero-copy Arrow integration to bring modern high-performance data manipulation to the .NET ecosystem.</p>
+                        <ul class="text-secondary small ps-3 mb-4">
+                            <li>Vectorized filtering, grouping, aggregation, and multi-threaded joins</li>
+                            <li>Zero GC allocations on vectorized arithmetic loops</li>
+                            <li>T-SQL query layer integration via <code>Glacier.Sql</code></li>
+                        </ul>
+                        <a href="https://github.com/ian-cowley/Glacier.Polaris" target="_blank" class="btn btn-outline-cyan btn-sm">
+                            <i class="fa-brands fa-github me-1"></i> Star Glacier.Polaris
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Glacier.Forge Spotlight -->
+                <div class="col-lg-6">
+                    <div class="feature-card h-100 p-4 border border-cyan-glow">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-success text-white px-3 py-1">Flagship #2 &bull; Ingestion</span>
+                            <a href="https://github.com/ian-cowley/Glacier.Forge" target="_blank" class="text-cyan"><i class="fa-brands fa-github fa-lg"></i></a>
+                        </div>
+                        <h3 class="h2 mb-3">Glacier.<span class="text-cyan">Forge</span></h3>
+                        <p class="lead text-light mb-3">The zero-allocation Semantic-to-Relational Hardener for high-velocity streaming.</p>
+                        <p class="text-secondary mb-4">Bridge the gap between unpredictable LLM outputs and strict relational schemas. Slices UTF-8 JSONL streams with <code>Utf8JsonReader</code>, validates columns via a byte-space Trie in $O(L)$ time, and bulk-loads directly into PostgreSQL binary <code>COPY</code> and SQL Server <code>SqlBulkCopy</code> at 146μs speeds with 0-byte GC allocations.</p>
+                        <ul class="text-secondary small ps-3 mb-4">
+                            <li>Zero-copy Hybrid I/O: <code>RandomAccess</code> + Memory-Mapped Files</li>
+                            <li>PostgreSQL Binary COPY &amp; SQL Server custom <code>PooledBatchDataReader</code></li>
+                            <li>100% Free &amp; Open Source (MIT)</li>
+                        </ul>
+                        <div class="d-flex gap-2">
+                            <a href="#docs" class="btn btn-cyan btn-sm">Explore Forge Docs</a>
+                            <a href="https://github.com/ian-cowley/Glacier.Forge" target="_blank" class="btn btn-outline-secondary btn-sm">
+                                <i class="fa-brands fa-github me-1"></i> Star Glacier.Forge
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Full Glacier Ecosystem Catalog -->
+    <section id="ecosystem" class="open-source-section py-5">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h2 class="section-title">The Complete Glacier <span class="text-cyan">Ecosystem</span></h2>
+                <p class="section-subtitle">25+ zero-allocation, high-performance libraries and tools built for modern .NET 10</p>
+            </div>
+
+            <!-- Category 1: Data & Query Engines -->
+            <h4 class="text-cyan border-bottom border-secondary pb-2 mb-4"><i class="fa-solid fa-database me-2"></i> Data &amp; Query Engines</h4>
+            <div class="row g-4 mb-5">
+                <!-- Polaris -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley/Glacier.Polaris" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.Polaris</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">High-performance, strongly-typed C# DataFrame library for .NET 10 inspired by Python Polars with SIMD compute.</p>
+                            <div class="os-footer"><span class="badge-tag">DataFrame</span><span class="badge-tag">SIMD</span></div>
+                        </div>
+                    </a>
+                </div>
+                <!-- Forge -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley/Glacier.Forge" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.Forge</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">Zero-allocation streaming JSONL hardener bulk-loading directly into SQL Server and PostgreSQL.</p>
+                            <div class="os-footer"><span class="badge-tag">Ingestion</span><span class="badge-tag">Zero-Alloc</span></div>
+                        </div>
+                    </a>
+                </div>
+                <!-- Sql -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley/Glacier.Sql" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.Sql</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">High-performance T-SQL query execution engine running directly on top of the Polaris columnar memory engine.</p>
+                            <div class="os-footer"><span class="badge-tag">SQL</span><span class="badge-tag">Engine</span></div>
+                        </div>
+                    </a>
+                </div>
+                <!-- Chrono -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley/Glacier.Chrono" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.Chrono</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">Zero-allocation embedded time-series compression engine in C# featuring high-density Gorilla compression.</p>
+                            <div class="os-footer"><span class="badge-tag">Time-Series</span><span class="badge-tag">Gorilla</span></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Category 2: Search & Knowledge Graphs -->
+            <h4 class="text-cyan border-bottom border-secondary pb-2 mb-4"><i class="fa-solid fa-magnifying-glass me-2"></i> Search, Vectors &amp; Graphs</h4>
+            <div class="row g-4 mb-5">
+                <!-- Vector -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley/Glacier.Vector" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.Vector</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">SIMD-accelerated vector search engine and MCP server optimized for LLM embeddings and cosine similarity.</p>
+                            <div class="os-footer"><span class="badge-tag">Vector DB</span><span class="badge-tag">Embeddings</span></div>
+                        </div>
+                    </a>
+                </div>
+                <!-- Graph -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley/Glacier.Graph" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.Graph</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">Zero-allocation array-backed graph database and traversal engine utilizing Forward Star representation.</p>
+                            <div class="os-footer"><span class="badge-tag">Graph DB</span><span class="badge-tag">MCP</span></div>
+                        </div>
+                    </a>
+                </div>
+                <!-- Grep -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley/Glacier.Grep" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.Grep</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">High-performance, SIMD-accelerated C# search engine and code index with MCP server support.</p>
+                            <div class="os-footer"><span class="badge-tag">Search</span><span class="badge-tag">SIMD</span></div>
+                        </div>
+                    </a>
+                </div>
+                <!-- DocTree -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley/Glacier.DocTree" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.DocTree</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">Zero-dependency Markdown parser and semantic chunking tree for RAG and LLM agent context compilation.</p>
+                            <div class="os-footer"><span class="badge-tag">RAG</span><span class="badge-tag">Chunking</span></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Category 3: AI & Intelligent Agents -->
+            <h4 class="text-cyan border-bottom border-secondary pb-2 mb-4"><i class="fa-solid fa-robot me-2"></i> AI &amp; Intelligent Agents</h4>
+            <div class="row g-4 mb-5">
+                <!-- Inference -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.Inference</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">Ultra-fast local LLM inference engine supporting GGUF quantizations, FlashAttention, and streaming generation.</p>
+                            <div class="os-footer"><span class="badge-tag">LLM</span><span class="badge-tag">GGUF</span></div>
+                        </div>
+                    </a>
+                </div>
+                <!-- Distributed -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.Inference.Dist</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">Distributed multi-node and multi-GPU tensor pipeline coordinator for local Glacier LLM models.</p>
+                            <div class="os-footer"><span class="badge-tag">Distributed</span><span class="badge-tag">Multi-GPU</span></div>
+                        </div>
+                    </a>
+                </div>
+                <!-- Bundle -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley/Glacier.Bundle" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.Bundle</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">Unified AI semantic context orchestrator and bundle compiler for multi-shape RAG pipelines.</p>
+                            <div class="os-footer"><span class="badge-tag">RAG</span><span class="badge-tag">Orchestrator</span></div>
+                        </div>
+                    </a>
+                </div>
+                <!-- Agent -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.Agent</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">Autonomous agent runtime and AgentDevKit (ADK) framework for tool execution, self-correction, and planning.</p>
+                            <div class="os-footer"><span class="badge-tag">Agents</span><span class="badge-tag">ADK</span></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Category 4: Compute, ML & Systems -->
+            <h4 class="text-cyan border-bottom border-secondary pb-2 mb-4"><i class="fa-solid fa-microchip me-2"></i> Compute, ML &amp; Systems</h4>
+            <div class="row g-4 mb-5">
+                <!-- Cluster -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.Cluster</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">High-performance pipeline clustering, distributed task distribution, and resilient node discovery.</p>
+                            <div class="os-footer"><span class="badge-tag">Cluster</span><span class="badge-tag">Pipelining</span></div>
+                        </div>
+                    </a>
+                </div>
+                <!-- Compute & GPU -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.Compute</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">Hardware compute abstraction and GPU tensor acceleration layer supporting direct CUDA and Vulkan compute.</p>
+                            <div class="os-footer"><span class="badge-tag">Compute</span><span class="badge-tag">GPU</span></div>
+                        </div>
+                    </a>
+                </div>
+                <!-- ML -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.ML</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">Zero-allocation C# machine learning kernels: Random Forests, KMeans clustering, and SIMD histograms.</p>
+                            <div class="os-footer"><span class="badge-tag">Machine Learning</span><span class="badge-tag">SIMD</span></div>
+                        </div>
+                    </a>
+                </div>
+                <!-- Storage -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.Storage</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">Columnar chunked persistence and memory-mapped block storage layer for maximum disk throughput.</p>
+                            <div class="os-footer"><span class="badge-tag">Storage</span><span class="badge-tag">MMF</span></div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Category 5: Developer Studio & UI -->
+            <h4 class="text-cyan border-bottom border-secondary pb-2 mb-4"><i class="fa-solid fa-display me-2"></i> Developer Studio &amp; UI Tooling</h4>
             <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="feature-card">
-                        <i class="fa-solid fa-microchip feature-icon mb-4"></i>
-                        <h3>Zero-Allocation Ingestion</h3>
-                        <p>Leverages custom byte-space trie node validations and C# 10/11 <code>Utf8JsonReader</code> pipelines. Bypasses UTF-16 string transcoding overhead completely.</p>
-                    </div>
+                <!-- Studio -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.Studio</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">Interactive developer cockpit and dashboard for inspecting pipelines, models, dataframes, and inference clusters.</p>
+                            <div class="os-footer"><span class="badge-tag">Studio</span><span class="badge-tag">Cockpit</span></div>
+                        </div>
+                    </a>
                 </div>
-                <div class="col-md-4">
-                    <div class="feature-card">
-                        <i class="fa-solid fa-key feature-icon mb-4"></i>
-                        <h3>Offline ECDSA Licensing</h3>
-                        <p>Fully compatible with Native AOT compilation. Validates P-256 Elliptic Curve signatures locally without outbound license server latency or telemetry calls.</p>
-                    </div>
+                <!-- Desktop & Windowing -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.Desktop</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">Lightweight cross-platform native UI framework, low-level swapchains, and native windowing bindings.</p>
+                            <div class="os-footer"><span class="badge-tag">Native UI</span><span class="badge-tag">Windowing</span></div>
+                        </div>
+                    </a>
                 </div>
-                <div class="col-md-4">
-                    <div class="feature-card">
-                        <i class="fa-solid fa-database feature-icon mb-4"></i>
-                        <h3>Direct Database Sinks</h3>
-                        <p>Supports bulk-loading directly via PostgreSQL binary <code>COPY</code> over raw UTF-8 byte streams and highly optimized SQL Server Bulk Data Reader structures.</p>
-                    </div>
+                <!-- Plot -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.Plot</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">GPU-accelerated scientific data visualization and statistical charting directly integrated with Polaris.</p>
+                            <div class="os-footer"><span class="badge-tag">Plotting</span><span class="badge-tag">Stats</span></div>
+                        </div>
+                    </a>
+                </div>
+                <!-- Cli -->
+                <div class="col-md-6 col-lg-3">
+                    <a href="https://github.com/ian-cowley" target="_blank" class="os-card-link">
+                        <div class="os-card h-100">
+                            <div class="os-header">
+                                <span class="os-title">Glacier.Cli</span>
+                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
+                            </div>
+                            <p class="os-description">Unified ecosystem command-line interface for orchestrating models, clusters, queries, and pipelines.</p>
+                            <div class="os-footer"><span class="badge-tag">CLI</span><span class="badge-tag">Tools</span></div>
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -116,16 +450,16 @@
     <section id="docs" class="docs-section py-5">
         <div class="container py-5">
             <div class="text-center mb-5">
-                <h2 class="section-title">Glacier.Forge <span class="text-cyan">Documentation</span></h2>
-                <p class="section-subtitle">Exhaustive guide to integration, parameters, formats, and pipelines</p>
+                <h2 class="section-title">Glacier.Forge <span class="text-cyan">Quickstart Guide</span></h2>
+                <p class="section-subtitle">Zero-allocation streaming ingestion into SQL Server &amp; PostgreSQL</p>
             </div>
             <div class="row">
                 <div class="col-lg-3 mb-4 mb-lg-0">
                     <div class="nav flex-column nav-pills nav-pills-custom me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                         <button class="nav-link active" id="v-pills-cli-tab" data-bs-toggle="pill" data-bs-target="#v-pills-cli" type="button" role="tab" aria-controls="v-pills-cli" aria-selected="true"><i class="fa-solid fa-terminal me-2"></i> CLI Reference</button>
-                        <button class="nav-link" id="v-pills-json-tab" data-bs-toggle="pill" data-bs-target="#v-pills-json" type="button" role="tab" aria-controls="v-pills-json" aria-selected="false" tabindex="-1"><i class="fa-solid fa-code me-2"></i> JSON Ingest Rules</button>
-                        <button class="nav-link" id="v-pills-pipelines-tab" data-bs-toggle="pill" data-bs-target="#v-pills-pipelines" type="button" role="tab" aria-controls="v-pills-pipelines" aria-selected="false" tabindex="-1"><i class="fa-solid fa-gears me-2"></i> Pipeline Examples</button>
-                        <button class="nav-link" id="v-pills-licensing-tab" data-bs-toggle="pill" data-bs-target="#v-pills-licensing" type="button" role="tab" aria-controls="v-pills-licensing" aria-selected="false" tabindex="-1"><i class="fa-solid fa-key me-2"></i> License Config</button>
+                        <button class="nav-link" id="v-pills-json-tab" data-bs-toggle="pill" data-bs-target="#v-pills-json" type="button" role="tab" aria-controls="v-pills-json" aria-selected="false"><i class="fa-solid fa-code me-2"></i> Ingest Rules</button>
+                        <button class="nav-link" id="v-pills-pipelines-tab" data-bs-toggle="pill" data-bs-target="#v-pills-pipelines" type="button" role="tab" aria-controls="v-pills-pipelines" aria-selected="false"><i class="fa-solid fa-gears me-2"></i> Pipelines</button>
+                        <button class="nav-link" id="v-pills-licensing-tab" data-bs-toggle="pill" data-bs-target="#v-pills-licensing" type="button" role="tab" aria-controls="v-pills-licensing" aria-selected="false"><i class="fa-solid fa-certificate me-2"></i> Open Source (MIT)</button>
                     </div>
                 </div>
                 <div class="col-lg-9">
@@ -133,7 +467,7 @@
                         <!-- CLI Reference -->
                         <div class="tab-pane fade active show" id="v-pills-cli" role="tabpanel" aria-labelledby="v-pills-cli-tab">
                             <h3 class="mb-3">Command Line Reference</h3>
-                            <p>To run the compiled self-contained AOT binary, pass the target database engine, schema table, and optional file path parameters:</p>
+                            <p>Glacier.Forge runs as a high-performance native CLI tool or standard .NET 10 console application:</p>
                             <pre class="code-block"><code>Glacier.Forge --db &lt;sqlserver|postgres&gt; --table &lt;schema.table_name&gt; [--file &lt;file_path&gt;] [--map &lt;aa:ll,bb:kk&gt;]</code></pre>
                             <h4 class="mt-4 mb-3">Parameters</h4>
                             <div class="table-responsive">
@@ -148,27 +482,33 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td><code>--db</code></td>
+                                            <td><code>--db</code>, <code>-db</code></td>
                                             <td><span class="text-cyan">Yes</span></td>
-                                            <td><code>sqlserver</code>, <code>postgres</code></td>
+                                            <td><code>sqlserver</code>, <code>postgres</code>, <code>pg</code></td>
                                             <td>Relational database engine mapping target.</td>
                                         </tr>
                                         <tr>
-                                            <td><code>--table</code></td>
+                                            <td><code>--table</code>, <code>-t</code></td>
                                             <td><span class="text-cyan">Yes</span></td>
-                                            <td>String (e.g., <code>dbo.users</code>)</td>
-                                            <td>Table name. For Postgres, qualify it with a schema (e.g. <code>public.users</code>).</td>
+                                            <td>String (e.g. <code>dbo.users</code> or <code>public.raw_logs</code>)</td>
+                                            <td>Destination table name with optional schema.</td>
                                         </tr>
                                         <tr>
-                                            <td><code>--file</code></td>
+                                            <td><code>--file</code>, <code>-f</code></td>
                                             <td>No</td>
                                             <td>File path</td>
                                             <td>Ingests a local <code>.jsonl</code> file. If omitted, streams via <code>stdin</code>.</td>
                                         </tr>
                                         <tr>
-                                            <td><code>--map</code> / <code>-m</code></td>
+                                            <td><code>--conn</code>, <code>-c</code></td>
                                             <td>No</td>
-                                            <td>Comma-separated pairs (e.g. <code>aa:ll,bb:kk</code>)</td>
+                                            <td>Connection String</td>
+                                            <td>Direct connection string (falls back to <code>appsettings.json</code> / user-secrets).</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>--map</code>, <code>-m</code></td>
+                                            <td>No</td>
+                                            <td>Comma-separated pairs</td>
                                             <td>Maps non-matching JSON property names to target database column names dynamically.</td>
                                         </tr>
                                     </tbody>
@@ -177,73 +517,38 @@
                         </div>
                         <!-- JSON Ingest Rules -->
                         <div class="tab-pane fade" id="v-pills-json" role="tabpanel" aria-labelledby="v-pills-json-tab">
-                            <h3 class="mb-3">JSONL Formatting &amp; Schema Rules</h3>
+                            <h3 class="mb-3">JSONL Formatting &amp; Schema Validation</h3>
                             <p>Each line must contain a single JSON Object. Below are the precise validation behaviors of the zero-allocation parser:</p>
                             <ul class="ps-3">
-                                <li class="mb-3"><strong>Case-Insensitive Column Matching:</strong> Incoming JSON properties are matched against the target table's database schema columns via a high-performance Trie. <code>userId</code>, <code>userid</code>, and <code>USERID</code> are all successfully resolved to the database column <code>UserId</code>.</li>
-                                <li class="mb-3"><strong>Nested Structures Tolerated:</strong> If properties contain arrays or sub-objects, the engine calls <code>reader.Skip()</code> to safely skip them without loading or allocating memory, ensuring stability against arbitrary JSON.</li>
-                                <li class="mb-3"><strong>Null Handling:</strong> Missing properties or explicit <code>null</code> tokens (e.g., <code>"email": null</code>) are automatically mapped to database <code>NULL</code> values.</li>
-                                <li class="mb-3"><strong>Superfluous Properties:</strong> Extra keys present in the JSON line that do not exist in the database table schema are automatically skipped.</li>
-                            </ul>
-
-                            <h4 class="mt-4 mb-2">How it Knows Your Database Credentials</h4>
-                            <p>Glacier.Forge checks the execution environment for database connection settings using the standard .NET configuration provider chain:</p>
-                            <ol class="ps-3 mb-4">
-                                <li class="mb-2"><strong>Local Configuration:</strong> Reads <code>appsettings.json</code> located in the folder of the running binary under the <code>ConnectionStrings</code> node.</li>
-                                <li class="mb-2"><strong>Environment Variables:</strong> Resolves system environment keys matching <code>ConnectionStrings__DefaultConnection</code> (ideal for stateless container runtimes like AWS App Runner or Docker).</li>
-                                <li class="mb-2"><strong>Development Secret Store:</strong> During local CLI development, it checks the local C# Secret Manager store (<code>dotnet user-secrets</code>).</li>
-                            </ol>
-
-                            <h4 class="mt-4 mb-2">How it Knows the Database &amp; JSON Schema</h4>
-                            <p>Glacier.Forge is designed to run <strong>dynamically</strong> without needing any manual schema code edits or predefined JSON Schema files:</p>
-                            <ul class="ps-3">
-                                <li class="mb-3"><strong>Dynamic Database Schema Lookup:</strong> At startup, the engine connects to the target database and queries the database catalog (e.g. <code>INFORMATION_SCHEMA.COLUMNS</code> in SQL Server, or <code>pg_catalog</code> views in Postgres) for the specific table name passed to the <code>--table</code> parameter. It resolves column names, exact data types, and nullability, constructing a fast in-memory schema schema map.</li>
-                                <li class="mb-3"><strong>Schema-Driven JSON Validation:</strong> The resolved database schema acts as the validation source of truth. As JSON records stream in, the parser dynamically matches the keys against the fetched column map. If a value type mismatches (e.g., a text string sent to an integer column) or a non-nullable column is omitted, the record is rejected, protecting database integrity on-the-fly.</li>
-                            </ul>
-
-                            <h4 class="mt-4 mb-2">JSON vs. Database Schema Mismatches</h4>
-                            <p>Here is exactly how the engine handles discrepancies between JSON inputs and the database schema at runtime:</p>
-                            <ul class="ps-3">
-                                <li class="mb-3"><strong>Different Property Orders:</strong> Glacier.Forge is completely order-independent. It parses key-value pairs sequentially using a case-insensitive ASCII Trie. Whichever order the fields arrive in the JSON line, they are resolved to their matching database columns.</li>
-                                <li class="mb-3"><strong>Fewer Fields in JSON (Missing Columns):</strong> If a database column is absent from the JSON record, the engine maps a <code>null</code> value to that column slot. If the column is defined as <code>NOT NULL</code> and has no default value, the database database driver will reject the record and the engine will flag a validation error.</li>
-                                <li class="mb-3"><strong>More Fields in JSON (Superfluous Keys):</strong> If the JSON contains extra properties that do not exist in the database table schema, the engine's Trie parser fails to find a match and calls <code>reader.Skip()</code> to bypass the property name and value without allocating any memory.</li>
-                                <li class="mb-3"><strong>Case Mismatches &amp; Collisions:</strong> Keys are matched case-insensitively against the Trie nodes. If a case-sensitive database (like PostgreSQL) has multiple columns that could match (e.g. <code>columnA</code> and <code>COLUMNa</code>), Glacier.Forge prioritizes a **case-sensitive exact match** first, and falls back to a case-insensitive match only if no exact match is found.</li>
+                                <li class="mb-3"><strong>Byte-Space Trie Matching:</strong> Incoming JSON properties are matched against target database columns in $O(L)$ time with ASCII bit-shift case insensitivity.</li>
+                                <li class="mb-3"><strong>Nested Structures Tolerated:</strong> If properties contain arrays or sub-objects, <code>reader.Skip()</code> traverses them without allocating memory.</li>
+                                <li class="mb-3"><strong>Automatic Null Handling:</strong> Missing properties or explicit <code>null</code> tokens are mapped directly to database <code>NULL</code> values.</li>
+                                <li class="mb-3"><strong>Supported Data Types:</strong> Full native support for <code>int</code>, <code>smallint</code>, <code>bigint</code>, <code>uuid</code>/<code>guid</code>, <code>bool</code>, <code>datetime</code>, <code>date</code>, <code>float</code>, <code>decimal</code>, <code>json</code>, and <code>varchar</code>/<code>text</code>.</li>
                             </ul>
                         </div>
                         <!-- Pipeline Examples -->
                         <div class="tab-pane fade" id="v-pills-pipelines" role="tabpanel" aria-labelledby="v-pills-pipelines-tab">
-                            <h3 class="mb-3">Ingestion Pipeline Workflows</h3>
-
+                            <h3 class="mb-3">Streaming Ingestion Examples</h3>
                             <h4 class="mt-4 mb-2">1. Real-Time Streaming via Standard Input (stdin)</h4>
-                            <p>Stream live non-deterministic logs or generated outputs directly from a scripting environment into a secure PostgreSQL table:</p>
                             <pre class="code-block"><code>python generate_llm_records.py | Glacier.Forge --db postgres --table public.raw_logs</code></pre>
-                            <p class="text-muted"><i class="fa-solid fa-circle-info me-1"></i> <em>Note: Forge buffers inputs in-memory and automatically flushes them in chunks of 1,000 to keep the transactional load low.</em></p>
 
                             <h4 class="mt-4 mb-2">2. Mass File Ingestion (Hybrid I/O)</h4>
-                            <p>Ingest a local static backup file. Forge automatically selects the optimal loading strategy based on file size:</p>
-                            <pre class="code-block"><code>Glacier.Forge --db sqlserver --table dbo.billing_history --file C:\backups\data.jsonl</code></pre>
-                            <ul class="ps-3">
-                                <li class="mb-2"><strong>&lt; 1MB:</strong> Rented array buffers from <code>ArrayPool&lt;byte&gt;</code> are utilized.</li>
-                                <li class="mb-2"><strong>&ge; 1MB:</strong> Utilizes a <code>MemoryMappedFile</code> pointer to map raw bytes directly to memory, enabling copy-free loading for gigabyte-scale streams.</li>
+                            <pre class="code-block"><code>Glacier.Forge --db sqlserver --table dbo.billing_history --file C:\backups\2026_data.jsonl</code></pre>
+                            <ul class="ps-3 text-secondary">
+                                <li><strong>&lt; 1MB:</strong> Rented array buffers from <code>ArrayPool&lt;byte&gt;</code> and OS <code>RandomAccess</code>.</li>
+                                <li><strong>&ge; 1MB:</strong> Direct <code>MemoryMappedFile</code> pointer with line-aligned boundary chunking.</li>
                             </ul>
                         </div>
-                        <!-- License Config -->
+                        <!-- Open Source MIT -->
                         <div class="tab-pane fade" id="v-pills-licensing" role="tabpanel" aria-labelledby="v-pills-licensing-tab">
-                            <h3 class="mb-3">License Key Activation</h3>
-                            <p>Glacier.Forge requires a valid ECDSA signature key to initiate the engine. You can configure this in one of two ways:</p>
-
-                            <h4 class="mt-4 mb-2">Option A: Environment Variable (Recommended for Docker/App Runner)</h4>
-                            <p>Set the <code>GLACIER_LICENSE</code> environment variable to your base64-encoded signature key:</p>
-                            <pre class="code-block"><code># PowerShell
-$env:GLACIER_LICENSE="&lt;base64_payload&gt;.&lt;base64_signature&gt;"
-
-# Shell (Linux/macOS)
-export GLACIER_LICENSE="&lt;base64_payload&gt;.&lt;base64_signature&gt;"</code></pre>
-
-                            <h4 class="mt-4 mb-2">Option B: Local License File</h4>
-                            <p>Place a file named <code>license.lic</code> directly in the directory of the executing application binary containing the license key:</p>
-                            <pre class="code-block"><code># File: license.lic
-eyJQaW5nIjogIm9rIn0=.MEUCIQ...</code></pre>
+                            <h3 class="mb-3">Free &amp; Open Source Software</h3>
+                            <p class="lead text-light">Glacier.Forge and the Glacier ecosystem are 100% free and open-source under the <strong>MIT License</strong>.</p>
+                            <p>There are no paywalls, commercial license gates, seat limits, or mandatory registration. You are free to run Glacier in personal projects, startups, and global enterprise data platforms.</p>
+                            <div class="mt-4">
+                                <a href="https://github.com/ian-cowley/Glacier.Forge" target="_blank" class="btn btn-outline-cyan">
+                                    <i class="fa-brands fa-github me-2"></i>Glacier.Forge Repository
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -251,119 +556,29 @@ eyJQaW5nIjogIm9rIn0=.MEUCIQ...</code></pre>
         </div>
     </section>
 
-    <!-- Open Source Section -->
-    <section id="open-source" class="open-source-section py-5">
-        <div class="container py-5">
-            <div class="text-center mb-5">
-                <h2 class="section-title">The Open Source <span class="text-cyan">Range</span></h2>
-                <p class="section-subtitle">Real, zero-allocation developer tooling built for .NET 10</p>
+    <!-- Support / Buy Me a Coffee Section -->
+    <section id="support" class="py-5 bg-dark-accent border-top border-bottom border-secondary">
+        <div class="container py-5 text-center">
+            <div class="badge-accent mb-3"><i class="fa-solid fa-heart text-danger me-1"></i> Independent Open Source</div>
+            <h2 class="section-title">Support <span class="text-cyan">Glacier Development</span></h2>
+            <p class="section-subtitle mx-auto" style="max-width: 680px;">
+                Glacier tools are built with an obsessive focus on performance, zero-allocation memory discipline, and developer joy. If Glacier saves your team compute hours or infrastructure costs, consider supporting the journey!
+            </p>
+            <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+                <!-- Buy Me A Coffee (UK & Global GBP / USD) -->
+                <a href="https://buymeacoffee.com/glaciersoftware" target="_blank" class="btn btn-warning btn-lg text-dark fw-bold px-4 py-3 shadow">
+                    <i class="fa-solid fa-mug-hot me-2"></i> Buy Me a Coffee (UK &amp; Global)
+                </a>
+                <!-- Ko-fi (UK Cambridge Headquartered) -->
+                <a href="https://ko-fi.com/glaciersoftware" target="_blank" class="btn btn-danger btn-lg text-white fw-bold px-4 py-3 shadow">
+                    <i class="fa-solid fa-heart me-2"></i> Support on Ko-fi (UK &pound;)
+                </a>
+                <!-- GitHub Sponsors -->
+                <a href="https://github.com/sponsors/ian-cowley" target="_blank" class="btn btn-outline-light btn-lg px-4 py-3 shadow">
+                    <i class="fa-brands fa-github me-2"></i> GitHub Sponsors
+                </a>
             </div>
-            <div class="row g-4 justify-content-center">
-                <!-- Polaris -->
-                <div class="col-md-6 col-lg-4">
-                    <a href="https://github.com/ian-cowley/Glacier.Polaris" target="_blank" class="os-card-link">
-                        <div class="os-card">
-                            <div class="os-header">
-                                <span class="os-title">Glacier.Polaris</span>
-                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
-                            </div>
-                            <p class="os-description">High-performance, strongly-typed C# DataFrame library for .NET 10, inspired by Python Polars. Features SIMD-accelerated compute, lazy query optimization, and comprehensive type system.</p>
-                            <div class="os-footer"><span class="badge-tag">DataFrame</span><span class="badge-tag">SIMD</span><span class="badge-tag">Analytics</span></div>
-                        </div>
-                    </a>
-                </div>
-                <!-- Graph -->
-                <div class="col-md-6 col-lg-4">
-                    <a href="https://github.com/ian-cowley/Glacier.Graph" target="_blank" class="os-card-link">
-                        <div class="os-card">
-                            <div class="os-header">
-                                <span class="os-title">Glacier.Graph</span>
-                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
-                            </div>
-                            <p class="os-description">High-performance, zero-allocation array-backed graph database and traversal engine for .NET 10 utilizing Forward Star representation.</p>
-                            <div class="os-footer"><span class="badge-tag">Graph DB</span><span class="badge-tag">Zero-Alloc</span><span class="badge-tag">MCP</span></div>
-                        </div>
-                    </a>
-                </div>
-                <!-- Grep -->
-                <div class="col-md-6 col-lg-4">
-                    <a href="https://github.com/ian-cowley/Glacier.Grep" target="_blank" class="os-card-link">
-                        <div class="os-card">
-                            <div class="os-header">
-                                <span class="os-title">Glacier.Grep</span>
-                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
-                            </div>
-                            <p class="os-description">High-performance, zero-allocation, SIMD-accelerated C# search engine and index for .NET 10 with MCP support.</p>
-                            <div class="os-footer"><span class="badge-tag">Search</span><span class="badge-tag">SIMD</span><span class="badge-tag">Grep</span></div>
-                        </div>
-                    </a>
-                </div>
-                <!-- Chrono -->
-                <div class="col-md-6 col-lg-4">
-                    <a href="https://github.com/ian-cowley/Glacier.Chrono" target="_blank" class="os-card-link">
-                        <div class="os-card">
-                            <div class="os-header">
-                                <span class="os-title">Glacier.Chrono</span>
-                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
-                            </div>
-                            <p class="os-description">Zero-allocation embedded time-series compression engine in C# 10 / .NET 10.0 featuring Gorilla compression algorithms.</p>
-                            <div class="os-footer"><span class="badge-tag">Time-Series</span><span class="badge-tag">Compression</span><span class="badge-tag">Gorilla</span></div>
-                        </div>
-                    </a>
-                </div>
-                <!-- Vector -->
-                <div class="col-md-6 col-lg-4">
-                    <a href="https://github.com/ian-cowley/Glacier.Vector" target="_blank" class="os-card-link">
-                        <div class="os-card">
-                            <div class="os-header">
-                                <span class="os-title">Glacier.Vector</span>
-                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
-                            </div>
-                            <p class="os-description">High-performance, SIMD-accelerated vector search engine and MCP server for .NET 10. Optimized for LLM embeddings and semantic search.</p>
-                            <div class="os-footer"><span class="badge-tag">Vector DB</span><span class="badge-tag">Semantic Search</span><span class="badge-tag">MCP</span></div>
-                        </div>
-                    </a>
-                </div>
-                <!-- Sql -->
-                <div class="col-md-6 col-lg-4">
-                    <a href="https://github.com/ian-cowley/Glacier.Sql" target="_blank" class="os-card-link">
-                        <div class="os-card">
-                            <div class="os-header">
-                                <span class="os-title">Glacier.Sql</span>
-                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
-                            </div>
-                            <p class="os-description">High-performance T-SQL query execution engine built on top of the Glacier.Polaris columnar memory DataFrame engine.</p>
-                            <div class="os-footer"><span class="badge-tag">SQL</span><span class="badge-tag">Query Engine</span><span class="badge-tag">Arrow</span></div>
-                        </div>
-                    </a>
-                </div>
-                <!-- DocTree -->
-                <div class="col-md-6 col-lg-4">
-                    <a href="https://github.com/ian-cowley/Glacier.DocTree" target="_blank" class="os-card-link">
-                        <div class="os-card">
-                            <div class="os-header">
-                                <span class="os-title">Glacier.DocTree</span>
-                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
-                            </div>
-                            <p class="os-description">High-performance, zero-dependency Markdown parser and semantic chunking tree for RAG and LLM agent contexts.</p>
-                            <div class="os-footer"><span class="badge-tag">RAG</span><span class="badge-tag">Markdown</span><span class="badge-tag">Chunking</span></div>
-                        </div>
-                    </a>
-                </div>
-                <!-- Bundle -->
-                <div class="col-md-6 col-lg-4">
-                    <a href="https://github.com/ian-cowley/Glacier.Bundle" target="_blank" class="os-card-link">
-                        <div class="os-card">
-                            <div class="os-header">
-                                <span class="os-title">Glacier.Bundle</span>
-                                <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
-                            </div>
-                            <p class="os-description">Unified AI semantic context orchestrator and bundle compiler for high-performance .NET 10 multi-shape RAG pipelines.</p>
-                            <div class="os-footer"><span class="badge-tag">AI</span><span class="badge-tag">RAG</span><span class="badge-tag">Orchestrator</span></div>
-                        </div>
-                    </a>
-                </div>
-            </div>
+            <p class="text-muted small mt-3"><i class="fa-solid fa-shield-halved me-1"></i> Direct Stripe Connect UK &pound; GBP payouts &bull; 0% fee on Ko-fi</p>
         </div>
     </section>
 
@@ -372,9 +587,11 @@ eyJQaW5nIjogIm9rIn0=.MEUCIQ...</code></pre>
         <div class="container text-center">
             <div class="footer-links mb-3">
                 <a href="https://github.com/ian-cowley" target="_blank" class="mx-3"><i class="fa-brands fa-github me-1"></i> GitHub</a>
+                <a href="https://buymeacoffee.com/glaciersoftware" target="_blank" class="mx-3 text-warning"><i class="fa-solid fa-mug-hot me-1"></i> Buy Me a Coffee</a>
+                <a href="https://ko-fi.com/glaciersoftware" target="_blank" class="mx-3 text-danger"><i class="fa-solid fa-heart me-1"></i> Ko-fi</a>
                 <a href="mailto:support@glaciersoftware.dev" class="mx-3"><i class="fa-solid fa-envelope me-1"></i> Support</a>
             </div>
-            <p class="mb-0 text-muted">© 2026 Glacier Software. All rights reserved. Developed for glaciersoftware.dev.</p>
+            <p class="mb-0 text-muted">&copy; 2026 Glacier Software. All rights reserved. 100% Free &amp; Open Source under the MIT License.</p>
         </div>
     </footer>
 

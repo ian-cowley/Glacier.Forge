@@ -16,6 +16,15 @@ public sealed class PostgresSink : IRelationalSink
     private int _currentRecordIndex = 0;
     private bool _isRecordActive = false;
 
+    private enum FieldLiteralKind : byte
+    {
+        None = 0,
+        Slice = 1,
+        True = 2,
+        False = 3,
+        Null = 4
+    }
+
     // Local in-memory batch buffers to prevent holding connection/transactions open during slow ingestion
     private Array[] _columnBuffers = null!;
     private bool[][] _nullIndicators = null!;
@@ -30,6 +39,7 @@ public sealed class PostgresSink : IRelationalSink
     private int[] _fieldOffsets = null!;
     private int[] _fieldLengths = null!;
     private bool[] _fieldPresent = null!;
+    private FieldLiteralKind[] _fieldKinds = null!;
 
     public Task InitializeAsync(string connectionString, string targetTable, ColumnSchema[] schema)
     {
@@ -40,6 +50,7 @@ public sealed class PostgresSink : IRelationalSink
         _fieldOffsets = new int[schema.Length];
         _fieldLengths = new int[schema.Length];
         _fieldPresent = new bool[schema.Length];
+        _fieldKinds = new FieldLiteralKind[schema.Length];
 
         _columnBuffers = new Array[schema.Length];
         _nullIndicators = new bool[schema.Length][];
@@ -57,9 +68,11 @@ public sealed class PostgresSink : IRelationalSink
             _columnBuffers[i] = type switch
             {
                 "int" or "integer" or "int4" => new int[MaxBatchSize],
+                "smallint" or "int2" => new short[MaxBatchSize],
                 "bigint" or "int8" => new long[MaxBatchSize],
+                "uuid" => new Guid[MaxBatchSize],
                 "boolean" or "bool" or "bit" => new bool[MaxBatchSize],
-                "datetime" or "datetime2" or "timestamp" or "timestamp without time zone" or "timestamp with time zone" or "timestamptz" => new DateTime[MaxBatchSize],
+                "datetime" or "datetime2" or "timestamp" or "timestamp without time zone" or "timestamp with time zone" or "timestamptz" or "date" => new DateTime[MaxBatchSize],
                 "float" or "double precision" => new double[MaxBatchSize],
                 "decimal" or "numeric" => new decimal[MaxBatchSize],
                 _ => Array.Empty<byte>() // empty placeholder for strings
@@ -72,7 +85,7 @@ public sealed class PostgresSink : IRelationalSink
             }
         }
 
-        // Build COPY command: COPY tableName (col1, col2, ...) FROM STDIN (FORMAT BINARY)
+        // Build COPY command: COPY schema.tableName (col1, col2, ...) FROM STDIN (FORMAT BINARY)
         var columnsBuilder = new System.Text.StringBuilder();
         for (int i = 0; i < schema.Length; i++)
         {
@@ -80,14 +93,28 @@ public sealed class PostgresSink : IRelationalSink
             columnsBuilder.Append('"').Append(schema[i].ColumnName).Append('"');
         }
 
-        _copySql = $"COPY \"{targetTable}\" ({columnsBuilder}) FROM STDIN (FORMAT BINARY)";
+        string quotedTable = QuoteTableName(targetTable);
+        _copySql = $"COPY {quotedTable} ({columnsBuilder}) FROM STDIN (FORMAT BINARY)";
 
         return Task.CompletedTask;
+    }
+
+    private static string QuoteTableName(string tableName)
+    {
+        int dot = tableName.IndexOf('.');
+        if (dot >= 0)
+        {
+            string schema = tableName[..dot].Trim('"');
+            string table = tableName[(dot + 1)..].Trim('"');
+            return $"\"{schema}\".\"{table}\"";
+        }
+        return $"\"{tableName.Trim('"')}\"";
     }
 
     public void StartRecord()
     {
         Array.Clear(_fieldPresent, 0, _fieldPresent.Length);
+        Array.Clear(_fieldKinds, 0, _fieldKinds.Length);
         _isRecordActive = true;
     }
 
@@ -96,15 +123,47 @@ public sealed class PostgresSink : IRelationalSink
         if (!_isRecordActive)
             throw new InvalidOperationException("No active record. Call StartRecord first.");
 
+        if (value.SequenceEqual("true"u8))
+        {
+            _fieldKinds[colIndex] = FieldLiteralKind.True;
+            _fieldPresent[colIndex] = true;
+            return;
+        }
+
+        if (value.SequenceEqual("false"u8))
+        {
+            _fieldKinds[colIndex] = FieldLiteralKind.False;
+            _fieldPresent[colIndex] = true;
+            return;
+        }
+
+        if (value.IsEmpty || value.SequenceEqual("null"u8))
+        {
+            _fieldKinds[colIndex] = FieldLiteralKind.Null;
+            _fieldPresent[colIndex] = true;
+            return;
+        }
+
         unsafe
         {
             fixed (byte* pLine = line)
             fixed (byte* pVal = value)
             {
                 long diff = pVal - pLine;
-                _fieldOffsets[colIndex] = (int)diff;
-                _fieldLengths[colIndex] = value.Length;
-                _fieldPresent[colIndex] = true;
+                if (diff >= 0 && diff + value.Length <= line.Length)
+                {
+                    _fieldOffsets[colIndex] = (int)diff;
+                    _fieldLengths[colIndex] = value.Length;
+                    _fieldKinds[colIndex] = FieldLiteralKind.Slice;
+                    _fieldPresent[colIndex] = true;
+                }
+                else
+                {
+                    _fieldKinds[colIndex] = FieldLiteralKind.Slice;
+                    _fieldOffsets[colIndex] = 0;
+                    _fieldLengths[colIndex] = 0;
+                    _fieldPresent[colIndex] = true;
+                }
             }
         }
     }
@@ -122,7 +181,43 @@ public sealed class PostgresSink : IRelationalSink
         // Process buffered fields for the current row in schema order
         for (int i = 0; i < _schema.Length; i++)
         {
-            if (!_fieldPresent[i])
+            if (!_fieldPresent[i] || _fieldKinds[i] == FieldLiteralKind.Null)
+            {
+                _nullIndicators[i][_currentRecordIndex] = true;
+                continue;
+            }
+
+            string type = _schema[i].DataTypeLower;
+
+            if (_fieldKinds[i] == FieldLiteralKind.True)
+            {
+                _nullIndicators[i][_currentRecordIndex] = false;
+                if (type is "boolean" or "bool" or "bit")
+                    ((bool[])_columnBuffers[i])[_currentRecordIndex] = true;
+                else if (type is "int" or "integer" or "int4")
+                    ((int[])_columnBuffers[i])[_currentRecordIndex] = 1;
+                else if (type is "smallint" or "int2")
+                    ((short[])_columnBuffers[i])[_currentRecordIndex] = 1;
+                else
+                    AppendStringToBuffer(i, "true"u8);
+                continue;
+            }
+
+            if (_fieldKinds[i] == FieldLiteralKind.False)
+            {
+                _nullIndicators[i][_currentRecordIndex] = false;
+                if (type is "boolean" or "bool" or "bit")
+                    ((bool[])_columnBuffers[i])[_currentRecordIndex] = false;
+                else if (type is "int" or "integer" or "int4")
+                    ((int[])_columnBuffers[i])[_currentRecordIndex] = 0;
+                else if (type is "smallint" or "int2")
+                    ((short[])_columnBuffers[i])[_currentRecordIndex] = 0;
+                else
+                    AppendStringToBuffer(i, "false"u8);
+                continue;
+            }
+
+            if (_fieldOffsets[i] < 0 || _fieldOffsets[i] + _fieldLengths[i] > line.Length)
             {
                 _nullIndicators[i][_currentRecordIndex] = true;
                 continue;
@@ -130,8 +225,7 @@ public sealed class PostgresSink : IRelationalSink
 
             ReadOnlySpan<byte> valSpan = line.Slice(_fieldOffsets[i], _fieldLengths[i]);
 
-            if (valSpan.IsEmpty || 
-                valSpan.SequenceEqual("null"u8))
+            if (valSpan.IsEmpty || valSpan.SequenceEqual("null"u8))
             {
                 _nullIndicators[i][_currentRecordIndex] = true;
                 continue;
@@ -139,7 +233,6 @@ public sealed class PostgresSink : IRelationalSink
 
             _nullIndicators[i][_currentRecordIndex] = false;
 
-            string type = _schema[i].DataTypeLower;
             switch (type)
             {
                 case "int":
@@ -155,11 +248,34 @@ public sealed class PostgresSink : IRelationalSink
                     }
                     break;
 
+                case "smallint":
+                case "int2":
+                    if (System.Buffers.Text.Utf8Parser.TryParse(valSpan, out short shortVal, out _))
+                    {
+                        ((short[])_columnBuffers[i])[_currentRecordIndex] = shortVal;
+                    }
+                    else
+                    {
+                        _nullIndicators[i][_currentRecordIndex] = true;
+                    }
+                    break;
+
                 case "bigint":
                 case "int8":
                     if (System.Buffers.Text.Utf8Parser.TryParse(valSpan, out long longVal, out _))
                     {
                         ((long[])_columnBuffers[i])[_currentRecordIndex] = longVal;
+                    }
+                    else
+                    {
+                        _nullIndicators[i][_currentRecordIndex] = true;
+                    }
+                    break;
+
+                case "uuid":
+                    if (System.Buffers.Text.Utf8Parser.TryParse(valSpan, out Guid guidVal, out _))
+                    {
+                        ((Guid[])_columnBuffers[i])[_currentRecordIndex] = guidVal;
                     }
                     else
                     {
@@ -194,6 +310,7 @@ public sealed class PostgresSink : IRelationalSink
                 case "timestamp without time zone":
                 case "timestamp with time zone":
                 case "timestamptz":
+                case "date":
                     if (System.Buffers.Text.Utf8Parser.TryParse(valSpan, out DateTime dtVal, out _, 'O'))
                     {
                         ((DateTime[])_columnBuffers[i])[_currentRecordIndex] = dtVal;
@@ -243,20 +360,29 @@ public sealed class PostgresSink : IRelationalSink
                     }
                     break;
 
-                default: // varchar, nvarchar, text, character varying
-                    if (_stringBufferOffset + valSpan.Length > _stringBuffer.Length)
-                    {
-                        throw new InvalidOperationException("PostgresSink string buffer overflow.");
-                    }
-                    valSpan.CopyTo(_stringBuffer.AsSpan(_stringBufferOffset));
-                    _stringOffsets[i][_currentRecordIndex] = _stringBufferOffset;
-                    _stringLengths[i][_currentRecordIndex] = valSpan.Length;
-                    _stringBufferOffset += valSpan.Length;
+                default: // varchar, nvarchar, text, character varying, json, jsonb
+                    AppendStringToBuffer(i, valSpan);
                     break;
             }
         }
 
         _currentRecordIndex++;
+    }
+
+    private void AppendStringToBuffer(int colIndex, ReadOnlySpan<byte> valSpan)
+    {
+        if (_stringBufferOffset + valSpan.Length > _stringBuffer.Length)
+        {
+            int newCapacity = Math.Max(_stringBuffer.Length * 2, _stringBufferOffset + valSpan.Length + 8192);
+            byte[] newBuf = new byte[newCapacity];
+            Buffer.BlockCopy(_stringBuffer, 0, newBuf, 0, _stringBufferOffset);
+            _stringBuffer = newBuf;
+        }
+
+        valSpan.CopyTo(_stringBuffer.AsSpan(_stringBufferOffset));
+        _stringOffsets[colIndex][_currentRecordIndex] = _stringBufferOffset;
+        _stringLengths[colIndex][_currentRecordIndex] = valSpan.Length;
+        _stringBufferOffset += valSpan.Length;
     }
 
     public async Task FlushBatchAsync()
@@ -292,9 +418,18 @@ public sealed class PostgresSink : IRelationalSink
                             importer.Write(((int[])_columnBuffers[colIndex])[rowIndex], npgsqlType);
                             break;
 
+                        case "smallint":
+                        case "int2":
+                            importer.Write(((short[])_columnBuffers[colIndex])[rowIndex], npgsqlType);
+                            break;
+
                         case "bigint":
                         case "int8":
                             importer.Write(((long[])_columnBuffers[colIndex])[rowIndex], npgsqlType);
+                            break;
+
+                        case "uuid":
+                            importer.Write(((Guid[])_columnBuffers[colIndex])[rowIndex], npgsqlType);
                             break;
 
                         case "boolean":
@@ -309,6 +444,7 @@ public sealed class PostgresSink : IRelationalSink
                         case "timestamp without time zone":
                         case "timestamp with time zone":
                         case "timestamptz":
+                        case "date":
                             importer.Write(((DateTime[])_columnBuffers[colIndex])[rowIndex], npgsqlType);
                             break;
 
@@ -345,12 +481,17 @@ public sealed class PostgresSink : IRelationalSink
         return type switch
         {
             "int" or "integer" or "int4" => NpgsqlDbType.Integer,
+            "smallint" or "int2" => NpgsqlDbType.Smallint,
             "bigint" or "int8" => NpgsqlDbType.Bigint,
+            "uuid" => NpgsqlDbType.Uuid,
             "boolean" or "bool" or "bit" => NpgsqlDbType.Boolean,
             "datetime" or "datetime2" or "timestamp" or "timestamp without time zone" => NpgsqlDbType.Timestamp,
             "timestamp with time zone" or "timestamptz" => NpgsqlDbType.TimestampTz,
+            "date" => NpgsqlDbType.Date,
             "float" or "double precision" => NpgsqlDbType.Double,
             "decimal" or "numeric" => NpgsqlDbType.Numeric,
+            "json" => NpgsqlDbType.Json,
+            "jsonb" => NpgsqlDbType.Jsonb,
             _ => NpgsqlDbType.Text
         };
     }
