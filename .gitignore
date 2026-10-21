@@ -6,6 +6,12 @@
 ## User Secrets & App Settings
 secrets.json
 appsettings.Development.json
+*.env
+*.env.*
+*.pem
+*.key
+*.lic
+*.pfx
 
 ## BenchmarkDotNet
 **/BenchmarkDotNet.Artifacts/
