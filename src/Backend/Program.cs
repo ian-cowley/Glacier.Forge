@@ -27,20 +27,18 @@ public static class Program
         app.UseDefaultFiles();
         app.UseStaticFiles();
 
-        // Health check / Website root endpoint
-        app.MapGet("/", (HttpContext context) =>
+        // Health check & Website root endpoint
+        app.MapGet("/", () =>
         {
-            var accept = context.Request.Headers.Accept.ToString();
-            if (accept.Contains("text/html", StringComparison.OrdinalIgnoreCase))
+            var filePath = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "index.html");
+            if (File.Exists(filePath))
             {
-                var filePath = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "index.html");
-                if (File.Exists(filePath))
-                {
-                    return Results.File(filePath, "text/html");
-                }
+                return Results.File(filePath, "text/html");
             }
             return Results.Ok("Glacier API Online");
         });
+
+        app.MapGet("/health", () => Results.Ok("Glacier API Online"));
 
         app.MapPost("/webhooks/lemonsqueezy", async (HttpRequest request, IConfiguration config) =>
         {
