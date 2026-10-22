@@ -2195,3 +2195,68 @@ img, svg, canvas, video {
         scroll-behavior: auto !important;
     }
 }
+
+
+/* ==========================================================================
+   Obsidian Ice High-Contrast Surface Panels & Overrides (WCAG AAA)
+   ========================================================================== */
+.card-obsidian-panel {
+    background-color: #12161F !important;
+    border: 1px solid #283344 !important;
+    border-radius: 8px !important;
+    color: #F0F6FC !important;
+}
+
+.card-obsidian-panel h4,
+.card-obsidian-panel h5,
+.card-obsidian-panel h6,
+.card-obsidian-panel strong {
+    color: #FFFFFF !important;
+}
+
+.card-obsidian-panel .text-light,
+.card-obsidian-panel .text-white {
+    color: #F0F6FC !important;
+}
+
+.card-obsidian-panel .text-secondary {
+    color: #C9D1D9 !important;
+}
+
+.card-obsidian-panel a.text-cyan {
+    color: #66FCF1 !important;
+    text-decoration: underline;
+}
+
+.card-obsidian-panel a.text-cyan:hover {
+    color: #FFFFFF !important;
+}
+
+/* Hard override: never allow raw Bootstrap bg-primary (#0d6efd) to create low contrast */
+.bg-primary {
+    background-color: #12161F !important;
+    border-color: #283344 !important;
+    color: #F0F6FC !important;
+}
+
+.bg-primary strong,
+.bg-primary h4,
+.bg-primary h5,
+.bg-primary h6 {
+    color: #FFFFFF !important;
+}
+
+.bg-primary .text-secondary,
+.bg-primary small,
+.bg-primary p,
+.bg-primary li,
+.bg-primary div {
+    color: #E2E8F0 !important;
+}
+
+.bg-primary .text-success-ste,
+.bg-primary .fa-check,
+.card-obsidian-panel .fa-check,
+.card-obsidian-panel .fa-circle-check {
+    color: #66FCF1 !important;
+}
