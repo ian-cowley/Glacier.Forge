@@ -28,7 +28,7 @@ public static class Program
         app.UseStaticFiles();
 
         // Health check & Website root endpoint
-        app.MapGet("/", () =>
+        app.MapMethods("/", new[] { "GET", "HEAD" }, () =>
         {
             var filePath = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "index.html");
             if (File.Exists(filePath))
@@ -38,7 +38,7 @@ public static class Program
             return Results.Ok("Glacier API Online");
         });
 
-        app.MapGet("/health", () => Results.Ok("Glacier API Online"));
+        app.MapMethods("/health", new[] { "GET", "HEAD" }, () => Results.Ok("Glacier API Online"));
 
         app.MapPost("/webhooks/lemonsqueezy", async (HttpRequest request, IConfiguration config) =>
         {
