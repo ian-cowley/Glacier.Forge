@@ -14,7 +14,7 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css?v=2.1">
+    <link rel="stylesheet" href="style.css?v=2.2">
 </head>
 <body>
     <!-- Static Toast Container for Accessible Copy Notifications (Defect E2E-05) -->
@@ -37,16 +37,23 @@
                     <li class="nav-item"><a class="nav-link" href="#flagships">Flagships</a></li>
                     <li class="nav-item"><a class="nav-link" href="#ecosystem">Ecosystem</a></li>
                     <li class="nav-item"><a class="nav-link" href="#docs"><i class="fa-solid fa-book-open me-1 text-cyan"></i> Docs Hub <span class="badge bg-cyan text-dark ms-1" style="font-size: 0.65rem;">v2.0</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="#support">Sponsor / Coffee</a></li>
                     <li class="nav-item ms-lg-2">
-                        <a class="nav-link btn btn-sm btn-outline-cyan px-3 py-1" href="https://github.com/ian-cowley" target="_blank">
+                        <a class="btn btn-sm btn-outline-cyan px-3 py-1" href="https://github.com/ian-cowley" target="_blank" rel="noopener noreferrer">
                             <i class="fa-brands fa-github me-1"></i> GitHub
                         </a>
                     </li>
-                    <li class="nav-item ms-lg-2">
-                        <a class="nav-link btn btn-sm btn-warning text-dark fw-bold px-3 py-1" href="https://buymeacoffee.com/glaciersoftware" target="_blank">
-                            <i class="fa-solid fa-mug-hot me-1"></i> Buy Me a Coffee
-                        </a>
+                    <li class="nav-item">
+                        <div class="header-sponsor-group">
+                            <a class="header-sponsor-icon bmc-icon" href="https://buymeacoffee.com/glaciersoftware" target="_blank" rel="noopener noreferrer" title="Buy Me a Coffee" aria-label="Buy Me a Coffee">
+                                <i class="fa-solid fa-mug-hot"></i>
+                            </a>
+                            <a class="header-sponsor-icon kofi-icon" href="https://ko-fi.com/glaciersoftware" target="_blank" rel="noopener noreferrer" title="Support on Ko-fi (UK &amp; Global)" aria-label="Support on Ko-fi">
+                                <i class="fa-solid fa-heart"></i>
+                            </a>
+                            <a class="header-sponsor-icon gh-sponsor-icon" href="https://github.com/sponsors/ian-cowley" target="_blank" rel="noopener noreferrer" title="GitHub Sponsors" aria-label="GitHub Sponsors">
+                                <i class="fa-regular fa-heart"></i>
+                            </a>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -63,8 +70,7 @@
                     <p class="hero-subtitle mb-4">A complete ecosystem of high-throughput data engines, SIMD-accelerated DataFrames, local AI inference, and streaming hardeners designed from the ground up for zero GC latency.</p>
                     <div class="d-flex flex-wrap gap-3">
                         <a href="#flagships" class="btn btn-cyan btn-lg"><i class="fa-solid fa-layer-group me-2"></i>Explore Flagships</a>
-                        <a href="https://github.com/ian-cowley" target="_blank" class="btn btn-outline-secondary btn-lg"><i class="fa-brands fa-github me-2"></i>GitHub Repositories</a>
-                        <a href="https://buymeacoffee.com/glaciersoftware" target="_blank" class="btn btn-warning btn-lg text-dark fw-bold"><i class="fa-solid fa-mug-hot me-2"></i>Buy Me a Coffee</a>
+                        <a href="https://github.com/ian-cowley" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-lg"><i class="fa-brands fa-github me-2"></i>GitHub Repositories</a>
                     </div>
                 </div>
                 <div class="col-lg-6 mt-5 mt-lg-0 text-center">
@@ -84,7 +90,7 @@
 | Benchmark Suite                | Throughput / Latency | Managed Memory |
 |:------------------------------ |---------------------:|---------------:|
 | <span class="text-green">Glacier.Polaris (DataFrame)</span>    | <span class="text-white">12.4M rows/sec</span>       |            <span class="text-green">0 B</span> |
-| <span class="text-green">Glacier.Forge (JSONL Hardener)</span> | <span class="text-white">144.8 μs / 1k</span>         |            <span class="text-green">0 B</span> |
+| <span class="text-green">Glacier.Forge (JSONL Hardener)</span> | <span class="text-white">144.8 us / 1k</span>        |            <span class="text-green">0 B</span> |
 | <span class="text-green">Glacier.Vector (Cosine Sim)</span>    | <span class="text-white">2.8B floats/sec</span>      |            <span class="text-green">0 B</span> |
 | <span class="text-green">Glacier.Chrono (Gorilla TS)</span>    | <span class="text-white">18.2M pts/sec</span>        |            <span class="text-green">0 B</span> |
 

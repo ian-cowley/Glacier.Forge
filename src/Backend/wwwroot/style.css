@@ -179,6 +179,71 @@ img, svg, canvas, video {
     border-radius: 4px;
 }
 
+/* Header Sponsor Icons Group (Buy Me a Coffee, Ko-fi, GitHub Sponsors) */
+.header-sponsor-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding-left: 0.65rem;
+    border-left: 1px solid var(--border-razor, #30363d);
+    margin-left: 0.65rem;
+}
+
+.header-sponsor-icon {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    border: 1px solid var(--border-razor, #30363d);
+    background-color: var(--canvas-surface, #161b22);
+    color: var(--text-secondary, #c9d1d9);
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+}
+
+.header-sponsor-icon.bmc-icon {
+    color: #FFDD00;
+}
+.header-sponsor-icon.bmc-icon:hover,
+.header-sponsor-icon.bmc-icon:focus-visible {
+    color: #090B0E !important;
+    background-color: #FFDD00 !important;
+    border-color: #FFDD00 !important;
+    box-shadow: 0 0 12px rgba(255, 221, 0, 0.45);
+    transform: translateY(-2px);
+    outline: none;
+}
+
+.header-sponsor-icon.kofi-icon {
+    color: #FF5E5B;
+}
+.header-sponsor-icon.kofi-icon:hover,
+.header-sponsor-icon.kofi-icon:focus-visible {
+    color: #FFFFFF !important;
+    background-color: #FF5E5B !important;
+    border-color: #FF5E5B !important;
+    box-shadow: 0 0 12px rgba(255, 94, 91, 0.45);
+    transform: translateY(-2px);
+    outline: none;
+}
+
+.header-sponsor-icon.gh-sponsor-icon {
+    color: #EA4AAA;
+}
+.header-sponsor-icon.gh-sponsor-icon:hover,
+.header-sponsor-icon.gh-sponsor-icon:focus-visible {
+    color: #FFFFFF !important;
+    background-color: #EA4AAA !important;
+    border-color: #EA4AAA !important;
+    box-shadow: 0 0 12px rgba(234, 74, 170, 0.45);
+    transform: translateY(-2px);
+    outline: none;
+}
+
 /* ==========================================================================
    Utility Classes & Contrast Remediation (WCAG AAA Certified)
    ========================================================================== */
@@ -443,13 +508,16 @@ img, svg, canvas, video {
 }
 
 .terminal-body {
-    font-family: var(--font-mono);
+    font-family: var(--font-mono) !important;
     font-size: 0.9rem;
     color: var(--text-secondary) !important;
     background-color: var(--canvas-terminal) !important;
 }
 
+.terminal-body pre,
 .terminal-body code {
+    font-family: var(--font-mono) !important;
+    font-variant-numeric: tabular-nums;
     color: var(--text-secondary) !important;
 }
 
@@ -2016,6 +2084,14 @@ img, svg, canvas, video {
 
     .pillar-filter-pills {
         gap: 0.4rem;
+        justify-content: flex-start;
+    }
+
+    .header-sponsor-group {
+        border-left: none;
+        padding-left: 0;
+        margin-left: 0;
+        margin-top: 0.75rem;
         justify-content: flex-start;
     }
 
