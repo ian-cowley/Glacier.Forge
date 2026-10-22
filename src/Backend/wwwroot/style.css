@@ -677,7 +677,7 @@ img, svg, canvas, video {
     background-color: var(--canvas-surface, #161b22);
     border: 1px solid var(--border-razor, #30363d);
     border-radius: 12px;
-    padding: 1.25rem 1.5rem 1.5rem;
+    padding: 1.25rem 1.15rem 1.35rem;
     position: relative;
     overflow: hidden;
     box-shadow: var(--shadow-card);
@@ -803,7 +803,8 @@ img, svg, canvas, video {
 
 .project-card .card-links {
     display: flex;
-    gap: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.32rem;
     border-top: 1px solid var(--border-grid, #21262d);
     padding-top: 0.85rem;
     margin-top: auto;
@@ -811,16 +812,18 @@ img, svg, canvas, video {
 
 .project-card .card-link-btn {
     font-family: var(--font-mono, 'Fira Code', monospace);
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 600;
-    padding: 0.35rem 0.65rem;
+    padding: 0.32rem 0.42rem;
     border-radius: 4px;
     text-decoration: none;
     transition: all 0.2s ease;
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    flex: 1;
+    gap: 0.25rem;
+    flex: 1 1 auto;
+    min-width: 0;
+    white-space: nowrap;
     justify-content: center;
 }
 
@@ -2166,11 +2169,17 @@ img, svg, canvas, video {
     .ecosystem-grid,
     .matrix-grid {
         grid-template-columns: repeat(4, 1fr) !important;
-        gap: 1.5rem;
+        gap: 1.25rem;
     }
 
     .container {
-        max-width: 1520px;
+        max-width: 1720px !important;
+    }
+}
+
+@media (min-width: 1920px) {
+    .container {
+        max-width: 1860px !important;
     }
 }
 
