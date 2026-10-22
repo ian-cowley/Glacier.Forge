@@ -408,3 +408,637 @@ h1, h2, h3, h4, h5, h6 {
 .bg-dark-accent {
     background-color: var(--bg-secondary);
 }
+
+/* ==========================================================================
+   Glacier Ecosystem Central Documentation Hub Styles
+   ========================================================================== */
+
+/* Main Hub Navigation Tabs */
+.hub-main-tabs {
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background-color: rgba(18, 22, 31, 0.85);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    backdrop-filter: blur(8px);
+}
+
+.hub-main-tabs .nav-link {
+    color: var(--text-secondary);
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.65rem 1.15rem;
+    transition: all 0.2s ease;
+}
+
+.hub-main-tabs .nav-link:hover {
+    color: var(--accent-color);
+    background-color: rgba(102, 252, 241, 0.05);
+    border-color: rgba(102, 252, 241, 0.2);
+}
+
+.hub-main-tabs .nav-link.active {
+    color: var(--bg-primary);
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 15px rgba(102, 252, 241, 0.3);
+}
+
+/* Secondary Sub Tabs */
+.hub-sub-tabs {
+    gap: 0.35rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.hub-sub-tabs .nav-link {
+    color: var(--text-muted);
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.4rem 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.hub-sub-tabs .nav-link:hover {
+    color: var(--text-primary);
+    border-color: var(--accent-hover);
+}
+
+.hub-sub-tabs .nav-link.active {
+    color: var(--accent-color);
+    background-color: rgba(102, 252, 241, 0.1);
+    border-color: var(--accent-color);
+}
+
+/* Hub Container Content */
+.hub-content-pane {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* Diataxis 4-Quadrant Matrix */
+.diataxis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.diataxis-card {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 1.5rem;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.diataxis-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 15px rgba(102, 252, 241, 0.08);
+}
+
+.diataxis-icon {
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Rule Badges and Cards */
+.rule-card {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--accent-color);
+    border-radius: 4px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.rule-number {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+/* Controlled Vocabulary Table */
+.vocab-table th, .vocab-table td {
+    padding: 0.6rem 0.85rem;
+}
+
+.text-danger-ste {
+    color: #ff6b6b;
+    text-decoration: line-through;
+}
+
+.text-success-ste {
+    color: #51cf66;
+    font-weight: 600;
+}
+
+/* Repository Matrix & Filter Bar */
+.repo-filter-wrapper {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.repo-search-input {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    border-radius: 4px;
+    padding: 0.6rem 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.repo-search-input:focus {
+    background-color: var(--bg-secondary);
+    border-color: var(--accent-color);
+    color: var(--text-primary);
+    box-shadow: 0 0 10px rgba(102, 252, 241, 0.25);
+    outline: none;
+}
+
+.pillar-filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.filter-pill {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 50rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-pill:hover {
+    color: var(--accent-color);
+    border-color: var(--accent-hover);
+}
+
+.filter-pill.active {
+    background-color: rgba(102, 252, 241, 0.15);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    font-weight: 700;
+}
+
+/* 35-Repo Matrix Grid */
+.matrix-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.25rem;
+}
+
+.matrix-card {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.matrix-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-color);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 12px rgba(102, 252, 241, 0.12);
+}
+
+.matrix-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+}
+
+.matrix-repo-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.pillar-tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    padding: 0.2em 0.6em;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+.pillar-analytics {
+    background-color: rgba(102, 252, 241, 0.12);
+    color: #66fcf1;
+    border: 1px solid rgba(102, 252, 241, 0.3);
+}
+
+.pillar-search {
+    background-color: rgba(167, 139, 250, 0.12);
+    color: #a78bfa;
+    border: 1px solid rgba(167, 139, 250, 0.3);
+}
+
+.pillar-ai {
+    background-color: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.pillar-compute {
+    background-color: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.pillar-tools {
+    background-color: rgba(56, 189, 248, 0.12);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.matrix-card-desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    flex-grow: 1;
+}
+
+.matrix-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+}
+
+.matrix-links {
+    display: flex;
+    gap: 0.5rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 0.75rem;
+}
+
+.matrix-btn {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.35rem 0.65rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.matrix-btn-gh {
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.matrix-btn-gh:hover {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.matrix-btn-doc {
+    background-color: rgba(102, 252, 241, 0.08);
+    color: var(--accent-color);
+    border: 1px solid rgba(102, 252, 241, 0.25);
+}
+
+.matrix-btn-doc:hover {
+    background-color: var(--accent-color);
+    color: var(--bg-primary);
+}
+
+.matrix-btn-pkg {
+    background-color: rgba(56, 189, 248, 0.08);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.matrix-btn-pkg:hover {
+    background-color: #38bdf8;
+    color: var(--bg-primary);
+}
+
+/* Laymen Metaphor Card */
+.metaphor-card {
+    background: linear-gradient(135deg, rgba(102, 252, 241, 0.05) 0%, rgba(18, 22, 31, 0.95) 100%);
+    border: 1px solid rgba(102, 252, 241, 0.3);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.metaphor-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background-color: var(--accent-color);
+}
+
+.metaphor-badge {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.metaphor-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+}
+
+.metaphor-body {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Interactive Architecture Diagram Styling */
+.interactive-diagram-canvas {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.diagram-step-flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.diag-step-node {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.85rem 1.15rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: center;
+    min-width: 170px;
+    user-select: none;
+}
+
+.diag-step-node:hover {
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 252, 241, 0.15);
+}
+
+.diag-step-node.active {
+    background-color: rgba(102, 252, 241, 0.12);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 15px rgba(102, 252, 241, 0.25);
+}
+
+.diag-step-icon {
+    font-size: 1.35rem;
+    color: var(--accent-color);
+    margin-bottom: 0.35rem;
+}
+
+.diag-step-title {
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.diag-step-sub {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+}
+
+.diag-arrow {
+    color: var(--accent-color);
+    font-size: 1.25rem;
+    opacity: 0.7;
+}
+
+/* Diagram Node Inspector Box */
+.diag-inspector-box {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--accent-color);
+    border-radius: 6px;
+    padding: 1.25rem;
+}
+
+.diag-inspector-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.diag-inspector-title {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.diag-inspector-badge {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    background-color: rgba(102, 252, 241, 0.1);
+    color: var(--accent-color);
+    border: 1px solid rgba(102, 252, 241, 0.2);
+    padding: 0.2em 0.6em;
+    border-radius: 3px;
+}
+
+/* Scientific Concept Index Cards */
+.concept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 1.25rem;
+}
+
+.concept-card {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.concept-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-color);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.concept-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+}
+
+.concept-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.math-preview {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.6rem 0.85rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--accent-color);
+    margin: 0.75rem 0;
+    overflow-x: auto;
+}
+
+.concept-glacier-anchor {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: #ffbd2e;
+    background-color: rgba(255, 189, 46, 0.08);
+    border: 1px solid rgba(255, 189, 46, 0.2);
+    padding: 0.3em 0.6em;
+    border-radius: 3px;
+    margin-bottom: 0.75rem;
+}
+
+.concept-citation-list {
+    margin-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 0.75rem;
+}
+
+.citation-item {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+}
+
+.citation-item a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.citation-item a:hover {
+    text-decoration: underline;
+}
+
+/* Starter Kit Template Preview */
+.template-viewer {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.template-viewer-toolbar {
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.template-code-box {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    background-color: var(--bg-primary);
+    padding: 1.25rem;
+    max-height: 480px;
+    overflow-y: auto;
+    white-space: pre;
+    line-height: 1.5;
+}
+
+/* Toast Notification for Clipboard Copy */
+.copy-toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background-color: var(--bg-secondary);
+    color: var(--accent-color);
+    border: 1px solid var(--accent-color);
+    border-radius: 6px;
+    padding: 0.75rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(102, 252, 241, 0.3);
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+}
+
+.copy-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+

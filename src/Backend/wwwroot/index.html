@@ -33,7 +33,7 @@
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item"><a class="nav-link" href="#flagships">Flagships</a></li>
                     <li class="nav-item"><a class="nav-link" href="#ecosystem">Ecosystem</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#docs">Documentation</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#docs"><i class="fa-solid fa-book-open me-1 text-cyan"></i> Docs Hub <span class="badge bg-cyan text-dark ms-1" style="font-size: 0.65rem;">v2.0</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="#support">Sponsor / Coffee</a></li>
                     <li class="nav-item ms-lg-2">
                         <a class="nav-link btn btn-sm btn-outline-cyan px-3 py-1" href="https://github.com/ian-cowley" target="_blank">
@@ -294,7 +294,7 @@
                     <a href="https://github.com/ian-cowley" target="_blank" class="os-card-link">
                         <div class="os-card h-100">
                             <div class="os-header">
-                                <span class="os-title">Glacier.Inference.Dist</span>
+                                <span class="os-title">Glacier.Inference.Distributed</span>
                                 <span class="os-github-link"><i class="fa-brands fa-github"></i></span>
                             </div>
                             <p class="os-description">Distributed multi-node and multi-GPU tensor pipeline coordinator for local Glacier LLM models.</p>
@@ -446,112 +446,1639 @@
         </div>
     </section>
 
-    <!-- Documentation Section -->
+    <!-- Central Documentation Hub Section -->
     <section id="docs" class="docs-section py-5">
         <div class="container py-5">
             <div class="text-center mb-5">
-                <h2 class="section-title">Glacier.Forge <span class="text-cyan">Quickstart Guide</span></h2>
-                <p class="section-subtitle">Zero-allocation streaming ingestion into SQL Server &amp; PostgreSQL</p>
+                <div class="badge-accent mb-3"><i class="fa-solid fa-book-bookmark me-1"></i> Central Knowledge Portal</div>
+                <h2 class="section-title">Glacier Ecosystem <span class="text-cyan">Central Documentation Hub</span></h2>
+                <p class="section-subtitle mx-auto" style="max-width: 760px;">
+                    World-class engineering specifications, aerospace documentation standards, interactive architectures, and scientific indexes across all 35 repositories.
+                </p>
             </div>
-            <div class="row">
-                <div class="col-lg-3 mb-4 mb-lg-0">
-                    <div class="nav flex-column nav-pills nav-pills-custom me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                        <button class="nav-link active" id="v-pills-cli-tab" data-bs-toggle="pill" data-bs-target="#v-pills-cli" type="button" role="tab" aria-controls="v-pills-cli" aria-selected="true"><i class="fa-solid fa-terminal me-2"></i> CLI Reference</button>
-                        <button class="nav-link" id="v-pills-json-tab" data-bs-toggle="pill" data-bs-target="#v-pills-json" type="button" role="tab" aria-controls="v-pills-json" aria-selected="false"><i class="fa-solid fa-code me-2"></i> Ingest Rules</button>
-                        <button class="nav-link" id="v-pills-pipelines-tab" data-bs-toggle="pill" data-bs-target="#v-pills-pipelines" type="button" role="tab" aria-controls="v-pills-pipelines" aria-selected="false"><i class="fa-solid fa-gears me-2"></i> Pipelines</button>
-                        <button class="nav-link" id="v-pills-licensing-tab" data-bs-toggle="pill" data-bs-target="#v-pills-licensing" type="button" role="tab" aria-controls="v-pills-licensing" aria-selected="false"><i class="fa-solid fa-certificate me-2"></i> Open Source (MIT)</button>
-                    </div>
-                </div>
-                <div class="col-lg-9">
-                    <div class="tab-content doc-tab-content p-4" id="v-pills-tabContent">
-                        <!-- CLI Reference -->
-                        <div class="tab-pane fade active show" id="v-pills-cli" role="tabpanel" aria-labelledby="v-pills-cli-tab">
-                            <h3 class="mb-3">Command Line Reference</h3>
-                            <p>Glacier.Forge runs as a high-performance native CLI tool or standard .NET 10 console application:</p>
-                            <pre class="code-block"><code>Glacier.Forge --db &lt;sqlserver|postgres&gt; --table &lt;schema.table_name&gt; [--file &lt;file_path&gt;] [--map &lt;aa:ll,bb:kk&gt;]</code></pre>
-                            <h4 class="mt-4 mb-3">Parameters</h4>
-                            <div class="table-responsive">
-                                <table class="table table-dark-custom mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Flag</th>
-                                            <th>Required</th>
-                                            <th>Values</th>
-                                            <th>Description</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><code>--db</code>, <code>-db</code></td>
-                                            <td><span class="text-cyan">Yes</span></td>
-                                            <td><code>sqlserver</code>, <code>postgres</code>, <code>pg</code></td>
-                                            <td>Relational database engine mapping target.</td>
-                                        </tr>
-                                        <tr>
-                                            <td><code>--table</code>, <code>-t</code></td>
-                                            <td><span class="text-cyan">Yes</span></td>
-                                            <td>String (e.g. <code>dbo.users</code> or <code>public.raw_logs</code>)</td>
-                                            <td>Destination table name with optional schema.</td>
-                                        </tr>
-                                        <tr>
-                                            <td><code>--file</code>, <code>-f</code></td>
-                                            <td>No</td>
-                                            <td>File path</td>
-                                            <td>Ingests a local <code>.jsonl</code> file. If omitted, streams via <code>stdin</code>.</td>
-                                        </tr>
-                                        <tr>
-                                            <td><code>--conn</code>, <code>-c</code></td>
-                                            <td>No</td>
-                                            <td>Connection String</td>
-                                            <td>Direct connection string (falls back to <code>appsettings.json</code> / user-secrets).</td>
-                                        </tr>
-                                        <tr>
-                                            <td><code>--map</code>, <code>-m</code></td>
-                                            <td>No</td>
-                                            <td>Comma-separated pairs</td>
-                                            <td>Maps non-matching JSON property names to target database column names dynamically.</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <!-- JSON Ingest Rules -->
-                        <div class="tab-pane fade" id="v-pills-json" role="tabpanel" aria-labelledby="v-pills-json-tab">
-                            <h3 class="mb-3">JSONL Formatting &amp; Schema Validation</h3>
-                            <p>Each line must contain a single JSON Object. Below are the precise validation behaviors of the zero-allocation parser:</p>
-                            <ul class="ps-3">
-                                <li class="mb-3"><strong>Byte-Space Trie Matching:</strong> Incoming JSON properties are matched against target database columns in $O(L)$ time with ASCII bit-shift case insensitivity.</li>
-                                <li class="mb-3"><strong>Nested Structures Tolerated:</strong> If properties contain arrays or sub-objects, <code>reader.Skip()</code> traverses them without allocating memory.</li>
-                                <li class="mb-3"><strong>Automatic Null Handling:</strong> Missing properties or explicit <code>null</code> tokens are mapped directly to database <code>NULL</code> values.</li>
-                                <li class="mb-3"><strong>Supported Data Types:</strong> Full native support for <code>int</code>, <code>smallint</code>, <code>bigint</code>, <code>uuid</code>/<code>guid</code>, <code>bool</code>, <code>datetime</code>, <code>date</code>, <code>float</code>, <code>decimal</code>, <code>json</code>, and <code>varchar</code>/<code>text</code>.</li>
-                            </ul>
-                        </div>
-                        <!-- Pipeline Examples -->
-                        <div class="tab-pane fade" id="v-pills-pipelines" role="tabpanel" aria-labelledby="v-pills-pipelines-tab">
-                            <h3 class="mb-3">Streaming Ingestion Examples</h3>
-                            <h4 class="mt-4 mb-2">1. Real-Time Streaming via Standard Input (stdin)</h4>
-                            <pre class="code-block"><code>python generate_llm_records.py | Glacier.Forge --db postgres --table public.raw_logs</code></pre>
 
-                            <h4 class="mt-4 mb-2">2. Mass File Ingestion (Hybrid I/O)</h4>
-                            <pre class="code-block"><code>Glacier.Forge --db sqlserver --table dbo.billing_history --file C:\backups\2026_data.jsonl</code></pre>
-                            <ul class="ps-3 text-secondary">
-                                <li><strong>&lt; 1MB:</strong> Rented array buffers from <code>ArrayPool&lt;byte&gt;</code> and OS <code>RandomAccess</code>.</li>
-                                <li><strong>&ge; 1MB:</strong> Direct <code>MemoryMappedFile</code> pointer with line-aligned boundary chunking.</li>
-                            </ul>
-                        </div>
-                        <!-- Open Source MIT -->
-                        <div class="tab-pane fade" id="v-pills-licensing" role="tabpanel" aria-labelledby="v-pills-licensing-tab">
-                            <h3 class="mb-3">Free &amp; Open Source Software</h3>
-                            <p class="lead text-light">Glacier.Forge and the Glacier ecosystem are 100% free and open-source under the <strong>MIT License</strong>.</p>
-                            <p>There are no paywalls, commercial license gates, seat limits, or mandatory registration. You are free to run Glacier in personal projects, startups, and global enterprise data platforms.</p>
-                            <div class="mt-4">
-                                <a href="https://github.com/ian-cowley/Glacier.Forge" target="_blank" class="btn btn-outline-cyan">
-                                    <i class="fa-brands fa-github me-2"></i>Glacier.Forge Repository
+            <!-- Hub Top-Level Navigation Tabs -->
+            <ul class="nav nav-pills hub-main-tabs mb-4 justify-content-center" id="hub-tabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="tab-btn-standard" data-bs-toggle="pill" data-bs-target="#tab-standard" type="button" role="tab" aria-controls="tab-standard" aria-selected="true">
+                        <i class="fa-solid fa-scale-balanced me-2"></i>Documentation Standard
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-btn-matrix" data-bs-toggle="pill" data-bs-target="#tab-matrix" type="button" role="tab" aria-controls="tab-matrix" aria-selected="false">
+                        <i class="fa-solid fa-table-cells me-2"></i>Ecosystem Matrix (35 Repos)
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-btn-cornerstones" data-bs-toggle="pill" data-bs-target="#tab-cornerstones" type="button" role="tab" aria-controls="tab-cornerstones" aria-selected="false">
+                        <i class="fa-solid fa-microchip me-2"></i>Cornerstone Architectures
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-btn-science" data-bs-toggle="pill" data-bs-target="#tab-science" type="button" role="tab" aria-controls="tab-science" aria-selected="false">
+                        <i class="fa-solid fa-graduation-cap me-2"></i>Scientific Concept Index
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="tab-btn-starter" data-bs-toggle="pill" data-bs-target="#tab-starter" type="button" role="tab" aria-controls="tab-starter" aria-selected="false">
+                        <i class="fa-solid fa-toolbox me-2"></i>Starter Kit &amp; Templates
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Hub Main Tab Content -->
+            <div class="tab-content" id="hub-tabs-content">
+                
+                <!-- ========================================================================= -->
+                <!-- TAB 1: GLACIER DOCUMENTATION STANDARD -->
+                <!-- ========================================================================= -->
+                <div class="tab-pane fade show active" id="tab-standard" role="tabpanel" aria-labelledby="tab-btn-standard">
+                    <div class="hub-content-pane">
+                        <div class="row align-items-center mb-4">
+                            <div class="col-lg-8">
+                                <h3 class="mb-2"><i class="fa-solid fa-shield-halved text-cyan me-2"></i>The Glacier Hybrid Documentation Standard</h3>
+                                <p class="text-secondary mb-0">
+                                    Synthesized from aerospace engineering specifications (<strong>ASD-STE100</strong>, <strong>S1000D</strong>, <strong>ATA iSpec 2200</strong>) and modern software architecture paradigms (<strong>Diátaxis</strong>, <strong>Arc42</strong>, <strong>C4 Model</strong>). Eliminates ambiguity and ensures zero-allocation systems discipline.
+                                </p>
+                            </div>
+                            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                                <a href="https://github.com/ian-cowley/PolarsPlus/blob/main/GLACIER_DOCS_STANDARD.md" target="_blank" class="btn btn-outline-cyan btn-sm">
+                                    <i class="fa-brands fa-github me-1"></i> View GLACIER_DOCS_STANDARD.md
                                 </a>
                             </div>
                         </div>
+
+                        <!-- 4-Pillar Hybrid Model -->
+                        <h4 class="mt-4 mb-3 text-cyan">The 4-Pillar Architectural Framework</h4>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6 col-lg-3">
+                                <div class="rule-card h-100">
+                                    <div class="rule-number mb-1">PILLAR 1</div>
+                                    <h5 class="text-white mb-2">ASD-STE100 Clarity</h5>
+                                    <p class="small text-secondary mb-0">Controlled vocabulary, active voice, sentence length caps (&le;20 words for steps, &le;25 for descriptions), and strict imperative mood.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="rule-card h-100">
+                                    <div class="rule-number mb-1">PILLAR 2</div>
+                                    <h5 class="text-white mb-2">Diátaxis Modularity</h5>
+                                    <p class="small text-secondary mb-0">Separates user intent into 4 discrete quadrants: Tutorials (learning), How-To (practical), Reference (technical facts), Explanation (understanding).</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="rule-card h-100">
+                                    <div class="rule-number mb-1">PILLAR 3</div>
+                                    <h5 class="text-white mb-2">Arc42 Blueprint</h5>
+                                    <p class="small text-secondary mb-0">Exhaustive 12-section architecture specification ensuring zero unaddressed concerns across data models, hardware queues, and Native AOT runtime constraints.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="rule-card h-100">
+                                    <div class="rule-number mb-1">PILLAR 4</div>
+                                    <h5 class="text-white mb-2">C4 &amp; Mermaid Visuals</h5>
+                                    <p class="small text-secondary mb-0">Version-controlled declarative Mermaid diagrams mapping Context (L1), Container (L2), Component (L3), and Code (L4) memory layouts.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ASD-STE100 Core Writing Rules -->
+                        <h4 class="mt-4 mb-3 text-cyan">ASD-STE100 Linguistic Engine for High-Performance .NET</h4>
+                        <div class="table-responsive mb-4">
+                            <table class="table table-dark-custom vocab-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Rule</th>
+                                        <th>Specification Constraint</th>
+                                        <th>Incorrect / Non-Compliant Pattern</th>
+                                        <th>Glacier Standard Compliant Pattern</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Rule 1</strong></td>
+                                        <td>Sentence length &le;20 words (procedural) / &le;25 words (descriptive)</td>
+                                        <td><span class="text-danger-ste">Before you begin the inference loop, make sure the Direct3D 12 device has completed initialization and verify all model weights are in unmanaged VRAM.</span> (25 words)</td>
+                                        <td><span class="text-success-ste">Initialize the Direct3D 12 device before inference. Map all model weights to contiguous unmanaged VRAM.</span> (15 words)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Rule 2</strong></td>
+                                        <td>Active voice mandatory; avoid passive verbs</td>
+                                        <td><span class="text-danger-ste">The unmanaged memory pointer is allocated by the buffer pool.</span></td>
+                                        <td><span class="text-success-ste">The buffer pool allocates the unmanaged memory pointer.</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Rule 3</strong></td>
+                                        <td>Imperative mood for instructions</td>
+                                        <td><span class="text-danger-ste">You should allocate the unmanaged array before streaming.</span></td>
+                                        <td><span class="text-success-ste">Allocate the unmanaged array before streaming.</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Rule 4</strong></td>
+                                        <td>Maximum 3 nouns in noun clusters</td>
+                                        <td><span class="text-danger-ste">Hardware accelerated quantized tensor model weights buffer pool</span> (8 nouns)</td>
+                                        <td><span class="text-success-ste">Buffer pool for quantized tensor weights with hardware acceleration</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Rule 5</strong></td>
+                                        <td>One instruction per sentence</td>
+                                        <td><span class="text-danger-ste">Clone the repository and compile the source in Release mode.</span></td>
+                                        <td><span class="text-success-ste">Clone the repository. Compile the source in Release mode.</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Rule 6</strong></td>
+                                        <td>State condition before action</td>
+                                        <td><span class="text-danger-ste">Release the unmanaged handle if the tensor upload fails.</span></td>
+                                        <td><span class="text-success-ste">If the tensor upload fails, release the unmanaged handle.</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Rule 7</strong></td>
+                                        <td>Strict Notice Taxonomy (WARNING / CAUTION / NOTE)</td>
+                                        <td><span class="text-danger-ste">Warning: this might cause a slight slowdown.</span></td>
+                                        <td><span class="text-success-ste">NOTE: System requires AVX-512 for optimal throughput.<br>CAUTION: Modifying buffer strides causes memory corruption.</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Controlled Vocabulary Dictionary -->
+                        <h4 class="mt-4 mb-3 text-cyan">Glacier Technical Dictionary (Controlled Vocabulary)</h4>
+                        <div class="row g-3 mb-4">
+                            <div class="col-lg-6">
+                                <div class="table-responsive">
+                                    <table class="table table-dark-custom vocab-table mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Unapproved Word</th>
+                                                <th>Approved Replacement</th>
+                                                <th>Glacier Context</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><span class="text-danger-ste">utilize</span></td>
+                                                <td><span class="text-success-ste">use</span></td>
+                                                <td>General computing</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="text-danger-ste">ensure</span></td>
+                                                <td><span class="text-success-ste">make sure / verify</span></td>
+                                                <td>Assertions &amp; boundaries</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="text-danger-ste">perform / execute</span></td>
+                                                <td><span class="text-success-ste">do / run</span></td>
+                                                <td>Procedural operations</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="text-danger-ste">prior to</span></td>
+                                                <td><span class="text-success-ste">before</span></td>
+                                                <td>Temporal ordering</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="text-danger-ste">terminate</span></td>
+                                                <td><span class="text-success-ste">stop / end</span></td>
+                                                <td>Processes &amp; loops</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="table-responsive">
+                                    <table class="table table-dark-custom vocab-table mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Approved Technical Name</th>
+                                                <th>Exact Technical Meaning in Glacier</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>Zero-Allocation</code></td>
+                                                <td>Execution path that produces exactly 0 bytes of managed GC allocations.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>Contiguous Buffer</code></td>
+                                                <td>Single, unbroken block of unmanaged physical memory.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>Hardware Intrinsics</code></td>
+                                                <td>CPU SIMD instructions (Vector512, Vector256, AVX-512, ARM Neon).</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>Lock-Free Ring Buffer</code></td>
+                                                <td>Non-blocking queue using volatile atomic sequence counter leases.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>Native AOT</code></td>
+                                                <td>Ahead-Of-Time compilation to native machine code without JIT runtime.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Diataxis 4-Quadrant Matrix Layout -->
+                        <h4 class="mt-4 mb-3 text-cyan">Diátaxis 4-Quadrant Information Model</h4>
+                        <div class="diataxis-grid mb-4">
+                            <div class="diataxis-card" style="border-top: 3px solid #66fcf1;">
+                                <div class="diataxis-icon text-cyan"><i class="fa-solid fa-graduation-cap"></i></div>
+                                <h5 class="text-white">1. Tutorials</h5>
+                                <div class="badge-tag mb-2">Learning-Oriented</div>
+                                <p class="small text-secondary mb-0">Guides newcomers through their first complete, successful experience. Focuses on confidence and practical momentum rather than exhaustive theoretical concepts.</p>
+                            </div>
+                            <div class="diataxis-card" style="border-top: 3px solid #38bdf8;">
+                                <div class="diataxis-icon text-info"><i class="fa-solid fa-wrench"></i></div>
+                                <h5 class="text-white">2. How-To Guides</h5>
+                                <div class="badge-tag mb-2">Problem-Oriented</div>
+                                <p class="small text-secondary mb-0">Provides direct recipes and steps to solve specific real-world tasks (e.g., "Stream JSONL to Postgres via Pipes" or "Deploy GGUF Model with D3D12").</p>
+                            </div>
+                            <div class="diataxis-card" style="border-top: 3px solid #f59e0b;">
+                                <div class="diataxis-icon text-warning"><i class="fa-solid fa-book"></i></div>
+                                <h5 class="text-white">3. Reference</h5>
+                                <div class="badge-tag mb-2">Information-Oriented</div>
+                                <p class="small text-secondary mb-0">Dry, unambiguous technical facts. Catalogs CLI parameter flags, public C# API signatures, struct memory layouts, and return codes.</p>
+                            </div>
+                            <div class="diataxis-card" style="border-top: 3px solid #a78bfa;">
+                                <div class="diataxis-icon text-purple"><i class="fa-solid fa-lightbulb"></i></div>
+                                <h5 class="text-white">4. Explanation</h5>
+                                <div class="badge-tag mb-2">Understanding-Oriented</div>
+                                <p class="small text-secondary mb-0">Explains high-level architectural rationale, memory model theory, SIMD register alignment, trade-offs, and academic research context.</p>
+                            </div>
+                        </div>
+
+                        <!-- Arc42 12-Section Architecture Blueprint -->
+                        <h4 class="mt-4 mb-3 text-cyan">Arc42 Architecture Framework (12 Standard Sections)</h4>
+                        <div class="row g-2 text-secondary small">
+                            <div class="col-md-4">
+                                <div class="p-2 rounded bg-primary border border-secondary mb-2"><strong>1. Goals &amp; Requirements:</strong> Quality requirements and performance targets.</div>
+                                <div class="p-2 rounded bg-primary border border-secondary mb-2"><strong>2. Constraints:</strong> .NET 10, Native AOT, unmanaged memory boundaries.</div>
+                                <div class="p-2 rounded bg-primary border border-secondary mb-2"><strong>3. Context &amp; Scope:</strong> External consumers, hardware devices, OS drivers.</div>
+                                <div class="p-2 rounded bg-primary border border-secondary mb-2"><strong>4. Solution Strategy:</strong> Zero-allocation primitives, hardware intrinsics.</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-2 rounded bg-primary border border-secondary mb-2"><strong>5. Building Block View:</strong> Modular decomposition (C4 L2 / L3).</div>
+                                <div class="p-2 rounded bg-primary border border-secondary mb-2"><strong>6. Runtime View:</strong> Execution sequence diagrams, lock-free queues.</div>
+                                <div class="p-2 rounded bg-primary border border-secondary mb-2"><strong>7. Deployment View:</strong> Standalone NuGet, Native AOT binaries, Docker.</div>
+                                <div class="p-2 rounded bg-primary border border-secondary mb-2"><strong>8. Cross-Cutting Concepts:</strong> Memory pools, SIMD kernels, logging.</div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-2 rounded bg-primary border border-secondary mb-2"><strong>9. Architecture Decisions:</strong> Formal ADRs capturing design choices.</div>
+                                <div class="p-2 rounded bg-primary border border-secondary mb-2"><strong>10. Quality Scenarios:</strong> Sustained throughput, zero GC memory stress.</div>
+                                <div class="p-2 rounded bg-primary border border-secondary mb-2"><strong>11. Risks &amp; Tech Debt:</strong> Hardware variance mitigations and fallbacks.</div>
+                                <div class="p-2 rounded bg-primary border border-secondary mb-2"><strong>12. Glossary:</strong> Controlled definitions of domain entities and terms.</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- ========================================================================= -->
+                <!-- TAB 2: ECOSYSTEM DOCUMENTATION MATRIX (ALL 35 REPOSITORIES) -->
+                <!-- ========================================================================= -->
+                <div class="tab-pane fade" id="tab-matrix" role="tabpanel" aria-labelledby="tab-btn-matrix">
+                    <div class="hub-content-pane">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+                            <div>
+                                <h3 class="mb-1"><i class="fa-solid fa-network-wired text-cyan me-2"></i>Ecosystem Documentation Matrix</h3>
+                                <p class="text-secondary mb-0">Comprehensive directory of all 35 repositories categorized across the 5 Glacier engineering pillars.</p>
+                            </div>
+                            <div class="mt-2 mt-md-0">
+                                <span class="badge bg-secondary p-2 font-monospace">Showing <span id="repo-match-count" class="text-cyan fw-bold">35</span> of 35 repositories</span>
+                            </div>
+                        </div>
+
+                        <!-- Search & Filter Controls -->
+                        <div class="repo-filter-wrapper">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-lg-5">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-secondary border-secondary text-cyan"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                        <input type="text" id="repo-search-input" class="form-control repo-search-input" placeholder="Search by repository name, keyword, or tag...">
+                                    </div>
+                                </div>
+                                <div class="col-lg-7">
+                                    <div class="pillar-filter-pills">
+                                        <button class="filter-pill active" data-filter="all">All (35)</button>
+                                        <button class="filter-pill" data-filter="analytics">Analytics &amp; Data (5)</button>
+                                        <button class="filter-pill" data-filter="search">Search &amp; Vectors (5)</button>
+                                        <button class="filter-pill" data-filter="ai">AI &amp; Inference (7)</button>
+                                        <button class="filter-pill" data-filter="compute">Compute &amp; Systems (6)</button>
+                                        <button class="filter-pill" data-filter="tools">Developer Tools &amp; UI (12)</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 35 Repositories Grid -->
+                        <div class="matrix-grid">
+                            
+                            <!-- PILLAR 1: ANALYTICS & DATA ENGINES (5) -->
+                            <div class="matrix-card" data-pillar="analytics" data-keywords="polaris dataframe arrow columnar simd kleene lazyframe">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-table me-2 text-cyan"></i>Glacier.Polaris</h5>
+                                        <span class="pillar-tag pillar-analytics">Analytics</span>
+                                    </div>
+                                    <p class="matrix-card-desc">High-performance Apache Arrow columnar DataFrame engine with SIMD compute kernels, Kleene logic, and LazyFrame query optimizer.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">Arrow IPC</span><span class="badge-tag">Zero-Alloc</span><span class="badge-tag">SIMD</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Polaris" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Polaris#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Polaris" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="analytics" data-keywords="forge jsonl trie streaming relational ingestion sqlserver postgres">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-bolt me-2 text-cyan"></i>Glacier.Forge</h5>
+                                        <span class="pillar-tag pillar-analytics">Analytics</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Semantic-to-relational streaming ingestion hardener. Parses JSONL via byte-space Trie and bulk streams to PostgreSQL and SQL Server.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">Byte Trie</span><span class="badge-tag">COPY BINARY</span><span class="badge-tag">Hybrid I/O</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Forge" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Forge#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Forge" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="analytics" data-keywords="sql tsql parser query planner ast in-memory engine">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-database me-2 text-cyan"></i>Glacier.Sql</h5>
+                                        <span class="pillar-tag pillar-analytics">Analytics</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Pure C# T-SQL parser, query planner, AST generator, and vectorized in-memory query execution engine with write-ahead logging.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">T-SQL</span><span class="badge-tag">Query Planner</span><span class="badge-tag">WAL</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Sql" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Sql#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Sql" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="analytics" data-keywords="chrono time-series gorilla compression soa timestamp">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-clock me-2 text-cyan"></i>Glacier.Chrono</h5>
+                                        <span class="pillar-tag pillar-analytics">Analytics</span>
+                                    </div>
+                                    <p class="matrix-card-desc">High-frequency Gorilla-compressed time-series engine with Structure-of-Arrays (SoA) layout and sub-nanosecond point scanning.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">Gorilla TS</span><span class="badge-tag">SoA Layout</span><span class="badge-tag">18M pts/s</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Chrono" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Chrono#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Chrono" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="analytics" data-keywords="storage arrow ipc chunk cache mmf unmanaged memory">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-hard-drive me-2 text-cyan"></i>Glacier.Storage</h5>
+                                        <span class="pillar-tag pillar-analytics">Analytics</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Pure C# Arrow IPC streaming, native MMF chunk cache, and unmanaged memory storage bus for extreme-throughput out-of-core persistence.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">Arrow IPC</span><span class="badge-tag">MMF Cache</span><span class="badge-tag">Zero SQLite</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Storage" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Storage#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Storage" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <!-- PILLAR 2: SEARCH, VECTORS & GRAPHS (5) -->
+                            <div class="matrix-card" data-pillar="search" data-keywords="vector similarity hnsw cosine dot distance simd">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-route me-2 text-purple"></i>Glacier.Vector</h5>
+                                        <span class="pillar-tag pillar-search">Search</span>
+                                    </div>
+                                    <p class="matrix-card-desc">SIMD-accelerated vector similarity search engine with zero-allocation HNSW graph index traversal and AVX-512 distance kernels.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">HNSW</span><span class="badge-tag">SIMD Dot</span><span class="badge-tag">2.8B fl/s</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Vector" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Vector#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Vector" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="search" data-keywords="graph csr forward star bfs dfs dijkstra shortest path">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-diagram-project me-2 text-purple"></i>Glacier.Graph</h5>
+                                        <span class="pillar-tag pillar-search">Search</span>
+                                    </div>
+                                    <p class="matrix-card-desc">CSR Forward Star sparse graph engine with zero-allocation BFS, DFS, and Dijkstra shortest path algorithms over unmanaged memory.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">CSR Graph</span><span class="badge-tag">Lock-Free</span><span class="badge-tag">BitArray</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Graph" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Graph#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Graph" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="search" data-keywords="grep regex simd 1gb chunking pattern matching ripgrep">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-search me-2 text-purple"></i>Glacier.Grep</h5>
+                                        <span class="pillar-tag pillar-search">Search</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Hardware SIMD multi-file regular expression search engine with 1GB chunking, overlap boundary margins, and sub-millisecond throughput.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">SIMD Grep</span><span class="badge-tag">1GB Chunks</span><span class="badge-tag">Native AOT</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Grep" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Grep#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Grep" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="search" data-keywords="doctree document tree segment tree hierarchical index">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-folder-tree me-2 text-purple"></i>Glacier.DocTree</h5>
+                                        <span class="pillar-tag pillar-search">Search</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Hierarchical document indexing, fast segment tree search, and memory-mapped tree store for structured text corpora.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">Segment Tree</span><span class="badge-tag">MMF Index</span><span class="badge-tag">Zero-Alloc</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.DocTree" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.DocTree#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.DocTree" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="search" data-keywords="rag hybrid retrieval reciprocal rank fusion reranker">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-brain me-2 text-purple"></i>Glacier.Rag</h5>
+                                        <span class="pillar-tag pillar-search">Search</span>
+                                    </div>
+                                    <p class="matrix-card-desc">In-process hybrid dense/sparse retrieval augmented generation with reciprocal rank fusion (RRF) and zero-allocation document reranking.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">Hybrid RAG</span><span class="badge-tag">RRF Fusion</span><span class="badge-tag">In-Process</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Rag" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Rag#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Rag" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <!-- PILLAR 3: AI, INFERENCE & AGENTS (7) -->
+                            <div class="matrix-card" data-pillar="ai" data-keywords="inference llm diffusion d3d12 vulkan sass gguf kvcache">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-microchip me-2 text-warning"></i>Glacier.Inference</h5>
+                                        <span class="pillar-tag pillar-ai">AI &amp; Inference</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Universal pure C# LLM &amp; diffusion runtime with Direct3D 12, Vulkan, and bare-metal NVIDIA SASS execution. Unmanaged ring-buffer KV cache.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">D3D12/Vulkan</span><span class="badge-tag">GGUF/SafeTensors</span><span class="badge-tag">50+ tok/s</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Inference" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Inference#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Inference" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="ai" data-keywords="inference distributed speculative multi-node cluster moe">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-cubes me-2 text-warning"></i>Glacier.Inference.Distributed</h5>
+                                        <span class="pillar-tag pillar-ai">AI &amp; Inference</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Distributed inference engine coordinating speculative overlap decoding, heterogeneous load balancing, and Vulkan cluster execution.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">Speculative</span><span class="badge-tag">Cluster Stage</span><span class="badge-tag">MoE 57B/141B</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Inference.Distributed" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Inference.Distributed#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Inference.Distributed" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="ai" data-keywords="tune lora qlora fine-tuning autograd backward gguf merger">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-sliders me-2 text-warning"></i>Glacier.Tune</h5>
+                                        <span class="pillar-tag pillar-ai">AI &amp; Inference</span>
+                                    </div>
+                                    <p class="matrix-card-desc">LoRA and QLoRA fine-tuning runtime. Fused cross-entropy loss, persistent autograd scratch workspaces, and standalone GGUF quant merger.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">QLoRA</span><span class="badge-tag">Fused Loss</span><span class="badge-tag">GGUF Merger</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Tune" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Tune#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Tune" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="ai" data-keywords="agent autonomous mcp tool execution multi-agent runtime">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-robot me-2 text-warning"></i>Glacier.Agent</h5>
+                                        <span class="pillar-tag pillar-ai">AI &amp; Inference</span>
+                                    </div>
+                                    <p class="matrix-card-desc">First-party autonomous agent runtime, zero-reflection tool execution engine, and native Model Context Protocol (MCP) server implementation.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">MCP Server</span><span class="badge-tag">Tool Engine</span><span class="badge-tag">Zero-Alloc</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Agent" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Agent#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Agent" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="ai" data-keywords="agentdevkit adk orchestration agent framework dispatch">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-shapes me-2 text-warning"></i>AgentDevKit.Adk</h5>
+                                        <span class="pillar-tag pillar-ai">AI &amp; Inference</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Extensible agent development kit, multi-turn agent dispatch, and decoupled tool contracts for intelligent autonomous systems.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">Agent Framework</span><span class="badge-tag">Tool Contracts</span><span class="badge-tag">.NET 10</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/AgentDevKit.Adk" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/AgentDevKit.Adk#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/AgentDevKit.Adk" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="ai" data-keywords="bundle model archive cryptographic packaging unmanaged">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-box-archive me-2 text-warning"></i>Glacier.Bundle</h5>
+                                        <span class="pillar-tag pillar-ai">AI &amp; Inference</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Cryptographic model archive bundling, digital signature verification, and unmanaged memory model extraction and loading.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">Archive</span><span class="badge-tag">ECDSA P-256</span><span class="badge-tag">Zero-Copy</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Bundle" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Bundle#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Bundle" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="ai" data-keywords="clavier tokenization bpe wordpiece vocabulary encoding">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-keyboard me-2 text-warning"></i>Glacier.Clavier</h5>
+                                        <span class="pillar-tag pillar-ai">AI &amp; Inference</span>
+                                    </div>
+                                    <p class="matrix-card-desc">High-speed zero-allocation tokenizer supporting BPE, WordPiece, and SentencePiece encoding directly over UTF-8 byte spans.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">BPE Tokenizer</span><span class="badge-tag">Byte Spans</span><span class="badge-tag">Zero-Alloc</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Clavier" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Clavier#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Clavier" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <!-- PILLAR 4: COMPUTE, GPU & SYSTEMS (6) -->
+                            <div class="matrix-card" data-pillar="compute" data-keywords="gpu megakernel ring buffer 100ns dispatch dgpu apu">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-microchip me-2 text-success"></i>Glacier.Gpu</h5>
+                                        <span class="pillar-tag pillar-compute">Compute</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Bare-metal persistent megakernel GPU compute engine with 64-byte lock-free ring buffer dispatch in 100ns. Concurrent dGPU+APU orchestration.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">100ns Dispatch</span><span class="badge-tag">Vyukov Queue</span><span class="badge-tag">SASS JIT</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Gpu" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Gpu#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Gpu" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="compute" data-keywords="compute memory buddy slab allocator virtual memory hal">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-memory me-2 text-success"></i>Glacier.Compute</h5>
+                                        <span class="pillar-tag pillar-compute">Compute</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Unmanaged memory management foundation. High-speed buddy and slab allocators, virtual memory reservoirs, and device dispatch HAL.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">Buddy Allocator</span><span class="badge-tag">Slab Allocator</span><span class="badge-tag">Zero-Alloc</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Compute" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Compute#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Compute" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="compute" data-keywords="tensor strided autograd tape gemm fma direct3d12">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-cubes-stacked me-2 text-success"></i>Glacier.Tensor</h5>
+                                        <span class="pillar-tag pillar-compute">Compute</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Strided N-D tensor library with reverse-mode autograd tape, hardware-accelerated GEMM/FMA, and Direct3D 12 compute shader dispatch.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">Autograd Tape</span><span class="badge-tag">Resident GEMM</span><span class="badge-tag">D3D12 Wave32</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Tensor" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Tensor#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Tensor" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="compute" data-keywords="cluster distributed dag scheduler p2p shuffle pipelines">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-circle-nodes me-2 text-success"></i>Glacier.Cluster</h5>
+                                        <span class="pillar-tag pillar-compute">Compute</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Distributed computing fabric with zero-allocation System.IO.Pipelines wire framing, peer-to-peer Arrow IPC shuffle bus, and DAG scheduler.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">P2P Shuffle</span><span class="badge-tag">DAG Scheduler</span><span class="badge-tag">32B Header</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Cluster" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Cluster#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Cluster" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="compute" data-keywords="ml machine learning kmeans random forest histogram trees">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-chart-line me-2 text-success"></i>Glacier.ML</h5>
+                                        <span class="pillar-tag pillar-compute">Compute</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Zero-copy tabular machine learning engine. Parallel SIMD KMeans clustering (100M+ samples/sec) and vectorized histogram decision forests.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">SIMD KMeans</span><span class="badge-tag">Decision Trees</span><span class="badge-tag">Zero-Copy ML</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.ML" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.ML#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.ML" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="compute" data-keywords="serve web server kestrel native aot continuous batching">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-server me-2 text-success"></i>Glacier.Serve</h5>
+                                        <span class="pillar-tag pillar-compute">Compute</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Sub-millisecond Native AOT Kestrel HTTP/WebSocket server with pooled request routing and continuous batching for real-time model serving.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">Native AOT</span><span class="badge-tag">Continuous Batch</span><span class="badge-tag">Kestrel</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Serve" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Serve#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Serve" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <!-- PILLAR 5: DEVELOPER TOOLS, UI & GRAPHICS (12) -->
+                            <div class="matrix-card" data-pillar="tools" data-keywords="studio blazor developer workbench telemetry inspector">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-display me-2 text-info"></i>Glacier.Studio</h5>
+                                        <span class="pillar-tag pillar-tools">Developer Tools</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Blazor interactive developer workbench with live hardware telemetry, model inspector, MCP service client, and pipeline designer.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">Blazor UI</span><span class="badge-tag">Telemetry</span><span class="badge-tag">MCP Client</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Studio" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Studio#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Studio" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="tools" data-keywords="desktop gui gpu accelerated visual tree layout">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-window-maximize me-2 text-info"></i>Glacier.Desktop</h5>
+                                        <span class="pillar-tag pillar-tools">Developer Tools</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Modern GPU-accelerated desktop UI engine featuring SIMD visual tree layout calculation, Kogge-Stone prefix sums, and instant startup.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">SIMD Layout</span><span class="badge-tag">&lt;15ms Startup</span><span class="badge-tag">GPU Render</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Desktop" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Desktop#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Desktop" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="tools" data-keywords="plot plotting 60fps lttb decimation scientific">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-chart-simple me-2 text-info"></i>Glacier.Plot</h5>
+                                        <span class="pillar-tag pillar-tools">Developer Tools</span>
+                                    </div>
+                                    <p class="matrix-card-desc">High-frequency 60fps 2D scientific plotting engine. Pure C# graphics pipeline with zero-allocation LTTB decimation of 10M+ points.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">60 FPS</span><span class="badge-tag">LTTB Kernel</span><span class="badge-tag">Zero Skia</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Plot" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Plot#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Plot" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="tools" data-keywords="statsviz statistical grammar of graphics kde violin pair">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-chart-pie me-2 text-info"></i>Glacier.StatsViz</h5>
+                                        <span class="pillar-tag pillar-tools">Developer Tools</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Declarative grammar of graphics and advanced statistical visualization. Vectorized 1D &amp; 2D Gaussian KDE, violin, and pair distributions.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">Grammar of Graphics</span><span class="badge-tag">SIMD KDE</span><span class="badge-tag">Zero-Alloc</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.StatsViz" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.StatsViz#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.StatsViz" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="tools" data-keywords="graphics d3d12 vulkan swapchain truetype rasterizer">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-paintbrush me-2 text-info"></i>Glacier.Graphics</h5>
+                                        <span class="pillar-tag pillar-tools">Developer Tools</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Pure C# Direct3D 12 and Vulkan 2D/3D graphics engine. Sub-pixel LCD anti-aliased TrueType font rasterizer without third-party C++ dependencies.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">D3D12/Vulkan</span><span class="badge-tag">TrueType</span><span class="badge-tag">Sub-pixel LCD</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Graphics" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Graphics#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Graphics" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="tools" data-keywords="windowing win32 x11 wayland event loop hal">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-table-columns me-2 text-info"></i>Glacier.Windowing</h5>
+                                        <span class="pillar-tag pillar-tools">Developer Tools</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Pure C# cross-platform windowing HAL for Win32, X11, and Wayland. Zero-polling native message loops and sub-millisecond presentation timing.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">Native HAL</span><span class="badge-tag">Win32/X11</span><span class="badge-tag">Zero Silk</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Windowing" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Windowing#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Windowing" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="tools" data-keywords="game ecs soa physics 240fps silknet vulkan">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-gamepad me-2 text-info"></i>Glacier.Game</h5>
+                                        <span class="pillar-tag pillar-tools">Developer Tools</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Cache-friendly Structure-of-Arrays (SoA) Entity Component System (ECS), SIMD collision physics, and 240+ FPS Direct3D 12 game engine.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">SoA ECS</span><span class="badge-tag">240+ FPS</span><span class="badge-tag">SIMD Physics</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Game" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Game#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Game" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="tools" data-keywords="mobile ios android native aot neon touch pipeline">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-mobile-screen me-2 text-info"></i>Glacier.Mobile</h5>
+                                        <span class="pillar-tag pillar-tools">Developer Tools</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Native AOT mobile UI runtime for iOS and Android. Hardware GPU composition and zero-overhead ARM Neon gesture processing.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">iOS / Android</span><span class="badge-tag">Native AOT</span><span class="badge-tag">ARM Neon</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Mobile" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Mobile#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Mobile" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="tools" data-keywords="spancoder code editor canvas piece-table font rasterizer">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-code me-2 text-info"></i>Glacier.SpanCoder</h5>
+                                        <span class="pillar-tag pillar-tools">Developer Tools</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Zero-allocation code editor canvas. Features piece-table text buffers, sub-pixel glyph rasterization, and instantaneous file loading.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">Piece-Table</span><span class="badge-tag">Sub-Pixel Text</span><span class="badge-tag">Editor Canvas</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.SpanCoder" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.SpanCoder#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.SpanCoder" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="tools" data-keywords="cli ecosystem command line interface tools orchestration">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-terminal me-2 text-info"></i>Glacier.Cli</h5>
+                                        <span class="pillar-tag pillar-tools">Developer Tools</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Unified ecosystem command-line interface for orchestrating models, clusters, queries, and pipelines with zero runtime overhead.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">Unified CLI</span><span class="badge-tag">Native AOT</span><span class="badge-tag">Zero-Alloc</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Cli" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Cli#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Cli" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="tools" data-keywords="showcase ecosystem demonstration telemetry benchmarks win32 dxgi">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-tv me-2 text-info"></i>Glacier.Showcase</h5>
+                                        <span class="pillar-tag pillar-tools">Developer Tools</span>
+                                    </div>
+                                    <p class="matrix-card-desc">Interactive ecosystem demonstration suite and telemetry workbench capturing authentic Win32/DXGI hardware performance metrics.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">Hardware Telemetry</span><span class="badge-tag">DXGI</span><span class="badge-tag">Benchmark Suite</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/Glacier.Showcase" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/Glacier.Showcase#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/Glacier.Showcase" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                            <div class="matrix-card" data-pillar="tools" data-keywords="tinypdf pdf parser font metrics renderer pure csharp">
+                                <div>
+                                    <div class="matrix-card-header">
+                                        <h5 class="matrix-repo-title"><i class="fa-solid fa-file-pdf me-2 text-info"></i>tinypdf-csharp</h5>
+                                        <span class="pillar-tag pillar-tools">Developer Tools</span>
+                                    </div>
+                                    <p class="matrix-card-desc">High-speed pure C# PDF document parser, font metrics extractor, and page renderer with zero third-party dependencies.</p>
+                                    <div class="matrix-tags">
+                                        <span class="badge-tag">PDF Parser</span><span class="badge-tag">Zero Native C++</span><span class="badge-tag">Font Metrics</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-links">
+                                    <a href="https://github.com/ian-cowley/tinypdf-csharp" target="_blank" class="matrix-btn matrix-btn-gh"><i class="fa-brands fa-github"></i> Repo</a>
+                                    <a href="https://github.com/ian-cowley/tinypdf-csharp#readme" target="_blank" class="matrix-btn matrix-btn-doc"><i class="fa-solid fa-book"></i> Docs</a>
+                                    <a href="https://www.nuget.org/packages/tinypdf-csharp" target="_blank" class="matrix-btn matrix-btn-pkg"><i class="fa-solid fa-box"></i> NuGet</a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================================================= -->
+                <!-- TAB 3: CORNERSTONE ARCHITECTURES & INTERACTIVE DIAGRAMS -->
+                <!-- ========================================================================= -->
+                <div class="tab-pane fade" id="tab-cornerstones" role="tabpanel" aria-labelledby="tab-btn-cornerstones">
+                    <div class="hub-content-pane">
+                        <div class="mb-4">
+                            <h3 class="mb-1"><i class="fa-solid fa-microchip text-cyan me-2"></i>Cornerstone Architectures &amp; Interactive Diagrams</h3>
+                            <p class="text-secondary mb-0">Deep architectural breakdowns for the 3 ecosystem flagships: laymen metaphors, interactive flow diagrams, and verified empirical benchmarks.</p>
+                        </div>
+
+                        <!-- Sub-Navigation for the 3 Cornerstones -->
+                        <ul class="nav nav-pills hub-sub-tabs" id="cornerstone-subtabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="subtab-forge-btn" data-bs-toggle="pill" data-bs-target="#cornerstone-forge" type="button" role="tab">
+                                    <i class="fa-solid fa-bolt me-1 text-cyan"></i> Glacier.Forge (Ingestion)
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="subtab-inference-btn" data-bs-toggle="pill" data-bs-target="#cornerstone-inference" type="button" role="tab">
+                                    <i class="fa-solid fa-brain me-1 text-warning"></i> Glacier.Inference (LLM Engine)
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="subtab-gpu-btn" data-bs-toggle="pill" data-bs-target="#cornerstone-gpu" type="button" role="tab">
+                                    <i class="fa-solid fa-microchip me-1 text-success"></i> Glacier.Gpu (Bare-Metal Engine)
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="cornerstone-subtabs-content">
+                            
+                            <!-- CORNERSTONE 1: GLACIER.FORGE -->
+                            <div class="tab-pane fade show active" id="cornerstone-forge" role="tabpanel">
+                                <!-- Laymen Metaphor -->
+                                <div class="metaphor-card">
+                                    <div class="metaphor-badge"><i class="fa-solid fa-train me-1"></i> Laymen Metaphor: The High-Speed Factory Sorter &amp; Express Train</div>
+                                    <div class="metaphor-title">How Glacier.Forge Works in Plain English</div>
+                                    <p class="metaphor-body">
+                                        Imagine a conveyor belt receiving unboxed packages from a delivery truck (non-deterministic LLM JSONL tokens). Standard systems unpack every package, translate the labels into a local language (allocating heap memory and triggering garbage collection pauses), and carry each box by hand to the warehouse. 
+                                        <br><br>
+                                        <strong>Glacier.Forge operates like an automated laser scanner</strong>: as packages zoom by at 100 mph, it reads barcodes in raw byte space without ever opening the box (the Byte-Space Trie). If the barcode matches the warehouse catalog, it drops the box directly into an open freight container (PostgreSQL Binary COPY / SQL Server BulkCopy). The moment the container fills, an express train delivers it into the database terminal in <strong>144 microseconds per 1,000 records</strong>—leaving exactly zero garbage on the factory floor.
+                                    </p>
+                                </div>
+
+                                <!-- Interactive Pipeline Flow -->
+                                <div class="interactive-diagram-canvas">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="text-white fw-bold"><i class="fa-solid fa-diagram-project me-2 text-cyan"></i>Interactive Ingestion Pipeline (Click any step to inspect):</span>
+                                        <span class="badge-tag">Zero-Transcoding Flow</span>
+                                    </div>
+                                    <div class="diagram-step-flow">
+                                        <div class="diag-step-node active" data-step="forge-1" data-target-inspector="forge-inspector">
+                                            <div class="diag-step-icon"><i class="fa-solid fa-file-import"></i></div>
+                                            <div class="diag-step-title">1. Hybrid I/O Ingress</div>
+                                            <div class="diag-step-sub">&lt;1MB ArrayPool / &ge;1MB MMF</div>
+                                        </div>
+                                        <div class="diag-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                        <div class="diag-step-node" data-step="forge-2" data-target-inspector="forge-inspector">
+                                            <div class="diag-step-icon"><i class="fa-solid fa-code"></i></div>
+                                            <div class="diag-step-title">2. Zero-Transcoding UTF-8</div>
+                                            <div class="diag-step-sub">Utf8JsonReader.ValueSpan</div>
+                                        </div>
+                                        <div class="diag-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                        <div class="diag-step-node" data-step="forge-3" data-target-inspector="forge-inspector">
+                                            <div class="diag-step-icon"><i class="fa-solid fa-sitemap"></i></div>
+                                            <div class="diag-step-title">3. 256-ary Byte Trie</div>
+                                            <div class="diag-step-sub">O(L) Bit-Shift Matching</div>
+                                        </div>
+                                        <div class="diag-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                        <div class="diag-step-node" data-step="forge-4" data-target-inspector="forge-inspector">
+                                            <div class="diag-step-icon"><i class="fa-solid fa-database"></i></div>
+                                            <div class="diag-step-title">4. Direct Sinks</div>
+                                            <div class="diag-step-sub">Npgsql COPY / SqlBulkCopy</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step Inspector Box -->
+                                    <div id="forge-inspector" class="diag-inspector-box">
+                                        <div class="diag-inspector-header">
+                                            <h5 class="diag-inspector-title">1. Streaming Ingress &amp; Zero-Copy Hybrid I/O</h5>
+                                            <span class="diag-inspector-badge">Glacier.Forge/HybridIoDispatcher.cs</span>
+                                        </div>
+                                        <p class="diag-inspector-desc small text-secondary mb-2">
+                                            Dynamically routes files based on size threshold: files &lt; 1 MB rent buffers from ArrayPool&lt;byte&gt;.Shared and invoke OS RandomAccess.Read with FileOptions.SequentialScan. Files &ge; 1 MB map unmanaged pointers directly via MemoryMappedFile and CreateViewAccessor with 1GB line-aligned reverse-newline boundary chunking.
+                                        </p>
+                                        <div class="diag-inspector-alloc font-monospace small text-cyan">
+                                            Managed Allocations: 0 Bytes | Time: ~42 μs
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Verified Empirical Benchmarks -->
+                                <div class="row g-3 mb-4">
+                                    <div class="col-lg-6">
+                                        <div class="p-3 bg-primary border border-secondary rounded h-100">
+                                            <h5 class="text-white mb-2"><i class="fa-solid fa-gauge-high text-cyan me-2"></i>Physical Ingestion Telemetry</h5>
+                                            <div class="table-responsive">
+                                                <table class="table table-dark-custom mb-0 small">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Workload</th>
+                                                            <th>Throughput</th>
+                                                            <th>Allocations</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>1,000 JSONL Records</td>
+                                                            <td><strong>144.8 μs</strong> (6.9M rec/s)</td>
+                                                            <td class="text-success-ste">0 Bytes</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>100,000 JSONL Records</td>
+                                                            <td><strong>14.2 ms</strong> (7.0M rec/s)</td>
+                                                            <td class="text-success-ste">0 Bytes</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Postgres Binary COPY Batch</td>
+                                                            <td><strong>48.6 μs / 500 rows</strong></td>
+                                                            <td class="text-success-ste">0 Bytes</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="p-3 bg-primary border border-secondary rounded h-100">
+                                            <h5 class="text-white mb-2"><i class="fa-solid fa-book-journal-whills text-cyan me-2"></i>Scientific Citations &amp; Foundations</h5>
+                                            <ul class="list-unstyled small text-secondary mb-0">
+                                                <li class="mb-2">
+                                                    <strong>1. Trie Memory &amp; String Search:</strong> Fredkin, E. (1960). <em>Trie Memory</em>. Communications of the ACM, 3(9), 490–499. <a href="https://doi.org/10.1145/367390.367400" target="_blank" class="text-cyan">DOI: 10.1145/367390.367400</a>
+                                                </li>
+                                                <li class="mb-2">
+                                                    <strong>2. Memory-Mapped I/O in Systems:</strong> Microsoft Learn. <em>Memory-Mapped Files &amp; FileOptions.SequentialScan in .NET 10</em>. <a href="https://learn.microsoft.com/en-us/dotnet/standard/io/memory-mapped-files" target="_blank" class="text-cyan">MS Docs</a>
+                                                </li>
+                                                <li>
+                                                    <strong>3. PostgreSQL Binary Data Protocol:</strong> PostgreSQL Global Development Group. <em>The COPY Protocol Specification</em>. <a href="https://www.postgresql.org/docs/current/sql-copy.html" target="_blank" class="text-cyan">PostgreSQL Manuals</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CORNERSTONE 2: GLACIER.INFERENCE -->
+                            <div class="tab-pane fade" id="cornerstone-inference" role="tabpanel">
+                                <!-- Laymen Metaphor -->
+                                <div class="metaphor-card">
+                                    <div class="metaphor-badge"><i class="fa-solid fa-person-running me-1"></i> Laymen Metaphor: The Olympic Relay Team with Photographic Memory</div>
+                                    <div class="metaphor-title">How Glacier.Inference Works in Plain English</div>
+                                    <p class="metaphor-body">
+                                        When an AI writes an essay, it has to look back at every single word it previously wrote to predict the next word. Normal AI frameworks re-read the entire essay from start to finish for every new word, creating an immense traffic jam that slows generation to a crawl.
+                                        <br><br>
+                                        <strong>Glacier.Inference operates like an Olympic relay team with photographic memory</strong>. Instead of re-reading the entire book, runners maintain a circular notepad (the Key-Value Cache Ring Buffer). As they pass the baton, each runner writes their notes into the next open slot. When the notepad fills, they overwrite only the oldest notes in a smooth circle (Sliding Window Attention). The massive library of model weights is stored in high-precision shorthand (Quantization Super-Blocks: Q4_K, IQ3_S, and 1.58-bit Ternary), fitting a massive AI into GPU memory so the engine sprints at <strong>50+ words per second</strong>.
+                                    </p>
+                                </div>
+
+                                <!-- Interactive Pipeline Flow -->
+                                <div class="interactive-diagram-canvas">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="text-white fw-bold"><i class="fa-solid fa-diagram-project me-2 text-warning"></i>Universal Autoregressive Pipeline (Click any step to inspect):</span>
+                                        <span class="badge-tag">Zero-Alloc Autoregressive Loop</span>
+                                    </div>
+                                    <div class="diagram-step-flow">
+                                        <div class="diag-step-node active" data-step="inf-1" data-target-inspector="inf-inspector">
+                                            <div class="diag-step-icon"><i class="fa-solid fa-file-shield text-warning"></i></div>
+                                            <div class="diag-step-title">1. Model Ingestion</div>
+                                            <div class="diag-step-sub">GGUF MMF &lt; 15ms</div>
+                                        </div>
+                                        <div class="diag-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                        <div class="diag-step-node" data-step="inf-2" data-target-inspector="inf-inspector">
+                                            <div class="diag-step-icon"><i class="fa-solid fa-circle-notch text-warning"></i></div>
+                                            <div class="diag-step-title">2. Ring-Buffer KV Cache</div>
+                                            <div class="diag-step-sub">NativeMemory AllocZeroed</div>
+                                        </div>
+                                        <div class="diag-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                        <div class="diag-step-node" data-step="inf-3" data-target-inspector="inf-inspector">
+                                            <div class="diag-step-icon"><i class="fa-solid fa-network-wired text-warning"></i></div>
+                                            <div class="diag-step-title">3. Transformer Core</div>
+                                            <div class="diag-step-sub">Q4_K GEMV &amp; RoPE</div>
+                                        </div>
+                                        <div class="diag-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                        <div class="diag-step-node" data-step="inf-4" data-target-inspector="inf-inspector">
+                                            <div class="diag-step-icon"><i class="fa-solid fa-microchip text-warning"></i></div>
+                                            <div class="diag-step-title">4. Hardware HAL</div>
+                                            <div class="diag-step-sub">D3D12 / Vulkan / SASS</div>
+                                        </div>
+                                        <div class="diag-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                        <div class="diag-step-node" data-step="inf-5" data-target-inspector="inf-inspector">
+                                            <div class="diag-step-icon"><i class="fa-solid fa-forward-step text-warning"></i></div>
+                                            <div class="diag-step-title">5. Speculative Sampling</div>
+                                            <div class="diag-step-sub">Warp-Shuffle Argmax</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step Inspector Box -->
+                                    <div id="inf-inspector" class="diag-inspector-box">
+                                        <div class="diag-inspector-header">
+                                            <h5 class="diag-inspector-title">1. Zero-Copy Model Ingestion (GGUF &amp; Safetensors)</h5>
+                                            <span class="diag-inspector-badge">Glacier.Inference/Formats/GgufFile.cs</span>
+                                        </div>
+                                        <p class="diag-inspector-desc small text-secondary mb-2">
+                                            Loads multi-gigabyte models in under 15ms cold startup via MemoryMappedFile pointers. Parses metadata key-values and tensor descriptors directly from unmanaged byte space, avoiding GC heap allocations during model bootstrapping.
+                                        </p>
+                                        <div class="diag-inspector-alloc font-monospace small text-cyan">
+                                            Startup Time: &lt; 15 ms cold | Managed Allocations: 0 Bytes
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Verified Empirical Benchmarks & Citations -->
+                                <div class="row g-3 mb-4">
+                                    <div class="col-lg-6">
+                                        <div class="p-3 bg-primary border border-secondary rounded h-100">
+                                            <h5 class="text-white mb-2"><i class="fa-solid fa-gauge-high text-warning me-2"></i>Live Generation Telemetry (RTX 4060)</h5>
+                                            <div class="table-responsive">
+                                                <table class="table table-dark-custom mb-0 small">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Model Architecture</th>
+                                                            <th>Throughput</th>
+                                                            <th>VRAM Paging</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>Qwen2.5-Coder-7B (Q4_K_M)</td>
+                                                            <td><strong>52.4 tok/sec</strong></td>
+                                                            <td class="text-success-ste">0.0 MB Thrash</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Llama-3.1-8B (Q4_0)</td>
+                                                            <td><strong>48.8 tok/sec</strong></td>
+                                                            <td class="text-success-ste">0.0 MB Thrash</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>DeepSeek-V2 MLA Compressed</td>
+                                                            <td><strong>58.2 tok/sec</strong></td>
+                                                            <td class="text-success-ste">0.0 MB Thrash</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="p-3 bg-primary border border-secondary rounded h-100">
+                                            <h5 class="text-white mb-2"><i class="fa-solid fa-book-journal-whills text-warning me-2"></i>Academic Foundations</h5>
+                                            <ul class="list-unstyled small text-secondary mb-0">
+                                                <li class="mb-2">
+                                                    <strong>1. Transformer Attention:</strong> Vaswani, A., et al. (2017). <em>Attention Is All You Need</em>. NeurIPS 2017. <a href="https://arxiv.org/abs/1706.03762" target="_blank" class="text-warning">arXiv:1706.03762</a>
+                                                </li>
+                                                <li class="mb-2">
+                                                    <strong>2. Rotary Position Embeddings:</strong> Su, J., et al. (2021). <em>RoFormer: Enhanced Transformer with RoPE</em>. <a href="https://arxiv.org/abs/2104.09864" target="_blank" class="text-warning">arXiv:2104.09864</a>
+                                                </li>
+                                                <li>
+                                                    <strong>3. 1.58-Bit Ternary Quantization:</strong> Wang, H., et al. (2024). <em>BitNet b1.58</em>. Microsoft Research. <a href="https://arxiv.org/abs/2402.17764" target="_blank" class="text-warning">arXiv:2402.17764</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CORNERSTONE 3: GLACIER.GPU -->
+                            <div class="tab-pane fade" id="cornerstone-gpu" role="tabpanel">
+                                <!-- Laymen Metaphor -->
+                                <div class="metaphor-card">
+                                    <div class="metaphor-badge"><i class="fa-solid fa-jet-fighter me-1"></i> Laymen Metaphor: The Air Traffic Controller and Persistent Jet Patrol</div>
+                                    <div class="metaphor-title">How Glacier.Gpu Works in Plain English</div>
+                                    <p class="metaphor-body">
+                                        In traditional GPU programming, every time you want the graphics card to do a math calculation, your computer has to pick up the phone, dial the operating system, request a flight clearance permit, and launch a new aircraft from the hangar. This phone call takes 10 microseconds (an eternity for modern silicon), meaning small tasks spend 99% of their time waiting on the phone instead of executing math.
+                                        <br><br>
+                                        <strong>Glacier.Gpu changes the paradigm completely</strong>: it launches a persistent squad of supersonic fighter jets that stay hovering in formation in the sky (the Persistent Megakernel). Ground control (C# CPU code) communicates with them through a 64-byte high-speed pneumatic tube (the lock-free Ring Buffer). The jets grab tasks in <strong>100 nanoseconds—100 times faster than a phone call</strong>—and execute with raw machine code at 14 trillion operations per second. On modern APUs, the CPU and GPU share the exact same physical memory pool, streaming data across the runway in 300 nanoseconds with zero PCIe hauling required.
+                                    </p>
+                                </div>
+
+                                <!-- Interactive Pipeline Flow -->
+                                <div class="interactive-diagram-canvas">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="text-white fw-bold"><i class="fa-solid fa-diagram-project me-2 text-success"></i>Lock-Free GPU Dispatch Pipeline (Click any step to inspect):</span>
+                                        <span class="badge-tag">Sub-Microsecond Dispatch</span>
+                                    </div>
+                                    <div class="diagram-step-flow">
+                                        <div class="diag-step-node active" data-step="gpu-1" data-target-inspector="gpu-inspector">
+                                            <div class="diag-step-icon"><i class="fa-solid fa-calculator text-success"></i></div>
+                                            <div class="diag-step-title">1. Turn Lease Algorithm</div>
+                                            <div class="diag-step-sub">Dmitry Vyukov Bounded MPMC</div>
+                                        </div>
+                                        <div class="diag-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                        <div class="diag-step-node" data-step="gpu-2" data-target-inspector="gpu-inspector">
+                                            <div class="diag-step-icon"><i class="fa-solid fa-layer-group text-success"></i></div>
+                                            <div class="diag-step-title">2. 64-Byte GpuWorkTask</div>
+                                            <div class="diag-step-sub">CPU Cacheline Aligned</div>
+                                        </div>
+                                        <div class="diag-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                        <div class="diag-step-node" data-step="gpu-3" data-target-inspector="gpu-inspector">
+                                            <div class="diag-step-icon"><i class="fa-solid fa-clock-rotate-left text-success"></i></div>
+                                            <div class="diag-step-title">3. Megakernel Polling</div>
+                                            <div class="diag-step-sub">100ns Dispatch Latency</div>
+                                        </div>
+                                        <div class="diag-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                        <div class="diag-step-node" data-step="gpu-4" data-target-inspector="gpu-inspector">
+                                            <div class="diag-step-icon"><i class="fa-solid fa-microchip text-success"></i></div>
+                                            <div class="diag-step-title">4. Warp Lockstep Math</div>
+                                            <div class="diag-step-sub">Bare-Metal SASS Machine Code</div>
+                                        </div>
+                                        <div class="diag-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                        <div class="diag-step-node" data-step="gpu-5" data-target-inspector="gpu-inspector">
+                                            <div class="diag-step-icon"><i class="fa-solid fa-share-nodes text-success"></i></div>
+                                            <div class="diag-step-title">5. Heterogeneous Co-Op</div>
+                                            <div class="diag-step-sub">NVIDIA dGPU + AMD APU</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Step Inspector Box -->
+                                    <div id="gpu-inspector" class="diag-inspector-box">
+                                        <div class="diag-inspector-header">
+                                            <h5 class="diag-inspector-title">1. Lock-Free Sequence Counter &amp; Turn Lease</h5>
+                                            <span class="diag-inspector-badge">Glacier.Gpu/RingBuffer/PersistentRingBuffer.cs</span>
+                                        </div>
+                                        <p class="diag-inspector-desc small text-secondary mb-2">
+                                            Producer claims circular slot via atomic Interlocked.Increment on sequence counter. Producer awaits slot lease turn using Dmitry Vyukov bounded MPMC queue algorithm. Arrays are padded with CacheLineStride = 8 to prevent CPU false sharing.
+                                        </p>
+                                        <div class="diag-inspector-alloc font-monospace small text-cyan">
+                                            Dispatch Latency: 100 ns | Lock-Free Invariant: Non-blocking
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Verified Empirical Benchmarks & Citations -->
+                                <div class="row g-3 mb-4">
+                                    <div class="col-lg-6">
+                                        <div class="p-3 bg-primary border border-secondary rounded h-100">
+                                            <h5 class="text-white mb-2"><i class="fa-solid fa-gauge-high text-success me-2"></i>Dispatch Benchmark Comparison</h5>
+                                            <div class="table-responsive">
+                                                <table class="table table-dark-custom mb-0 small">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Execution Mechanism</th>
+                                                            <th>Launch Latency</th>
+                                                            <th>Speedup</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>Standard <code>cuLaunchKernel</code></td>
+                                                            <td>10.38 μs</td>
+                                                            <td>Baseline</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td><strong>Glacier Persistent Megakernel</strong></td>
+                                                            <td><strong>100.0 ns</strong></td>
+                                                            <td class="text-success-ste">103.8x Faster</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>AMD APU Unified Coherency</td>
+                                                            <td><strong>300.0 ns</strong></td>
+                                                            <td class="text-success-ste">Zero PCIe Copy</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="p-3 bg-primary border border-secondary rounded h-100">
+                                            <h5 class="text-white mb-2"><i class="fa-solid fa-book-journal-whills text-success me-2"></i>Systems Literature</h5>
+                                            <ul class="list-unstyled small text-secondary mb-0">
+                                                <li class="mb-2">
+                                                    <strong>1. GPU Computing &amp; SIMT Architecture:</strong> Nickolls, J., &amp; Dally, W. J. (2010). <em>The GPU Computing Era</em>. IEEE Micro, 30(2), 56–69. <a href="https://doi.org/10.1109/MM.2010.41" target="_blank" class="text-success">DOI: 10.1109/MM.2010.41</a>
+                                                </li>
+                                                <li class="mb-2">
+                                                    <strong>2. Bounded MPMC Lock-Free Queues:</strong> Vyukov, D. (2014). <em>Bounded MPMC Queue Algorithm</em>. <a href="https://www.1024cores.net/home/lock-free-algorithms/queues/bounded-mpmc-queue" target="_blank" class="text-success">1024cores.net</a>
+                                                </li>
+                                                <li>
+                                                    <strong>3. CUDA Driver Architecture:</strong> NVIDIA Corporation. <em>CUDA C++ Hardware Implementation &amp; Warp Scheduling</em>. <a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html" target="_blank" class="text-success">NVIDIA Docs</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================================================= -->
+                <!-- TAB 4: SCIENTIFIC CONCEPT & EDUCATIONAL RESOURCE INDEX -->
+                <!-- ========================================================================= -->
+                <div class="tab-pane fade" id="tab-science" role="tabpanel" aria-labelledby="tab-btn-science">
+                    <div class="hub-content-pane">
+                        <div class="mb-4">
+                            <h3 class="mb-1"><i class="fa-solid fa-graduation-cap text-cyan me-2"></i>Scientific Concept &amp; Educational Resource Index</h3>
+                            <p class="text-secondary mb-0">Authoritative educational index linking Glacier low-level systems and AI implementations directly to seminal peer-reviewed research papers (arXiv, IEEE, ACM, NVIDIA, AMD).</p>
+                        </div>
+
+                        <div class="concept-grid">
+                            
+                            <!-- Concept 1: Attention Mechanisms -->
+                            <div class="concept-card">
+                                <div>
+                                    <div class="concept-header">
+                                        <h5 class="concept-title">1. Attention Mechanisms (GQA, MLA, Sliding Window)</h5>
+                                        <span class="badge-tag">Neural Architecture</span>
+                                    </div>
+                                    <p class="small text-secondary mb-2">
+                                        Calculates dynamic correlation between queries ($Q$), keys ($K$), and values ($V$). Grouped-Query Attention (GQA) shares key-value heads to reduce memory traffic, while Multi-Head Latent Attention (MLA) compresses the KV cache into a low-rank latent vector.
+                                    </p>
+                                    <div class="math-preview">
+                                        Attention(Q, K, V) = softmax(Q K^T / &radic;d_k + M) V
+                                    </div>
+                                    <div class="concept-glacier-anchor">
+                                        <i class="fa-solid fa-code me-1"></i> Glacier.Inference/Memory/KVCache.cs &amp; AttentionGqaF16.hlsl
+                                    </div>
+                                </div>
+                                <div class="concept-citation-list">
+                                    <div class="citation-item">
+                                        &bull; Vaswani et al. (2017) <em>Attention Is All You Need</em>. <a href="https://arxiv.org/abs/1706.03762" target="_blank">arXiv:1706.03762</a>
+                                    </div>
+                                    <div class="citation-item">
+                                        &bull; DeepSeek-AI (2024) <em>DeepSeek-V2: Multi-Head Latent Attention</em>. <a href="https://arxiv.org/abs/2405.04434" target="_blank">arXiv:2405.04434</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Concept 2: Rotary Position Embeddings -->
+                            <div class="concept-card">
+                                <div>
+                                    <div class="concept-header">
+                                        <h5 class="concept-title">2. Rotary Position Embeddings (RoPE, YaRN, 3D Axial)</h5>
+                                        <span class="badge-tag">Positional Encodings</span>
+                                    </div>
+                                    <p class="small text-secondary mb-2">
+                                        Encodes relative positional information by multiplying query and key vectors by a 2D orthogonal rotation matrix. Scales to 128k context via YaRN frequency interpolation and 3D spatio-temporal axes for diffusion models.
+                                    </p>
+                                    <div class="math-preview">
+                                        R_&Theta;,m^d = diag(R_&theta;1,m, ..., R_&theta;d/2,m)
+                                    </div>
+                                    <div class="concept-glacier-anchor">
+                                        <i class="fa-solid fa-code me-1"></i> Glacier.Inference/Gpu/RoPEKernel.cs &amp; Glacier.Tune
+                                    </div>
+                                </div>
+                                <div class="concept-citation-list">
+                                    <div class="citation-item">
+                                        &bull; Su et al. (2021) <em>RoFormer: Enhanced Transformer with RoPE</em>. <a href="https://arxiv.org/abs/2104.09864" target="_blank">arXiv:2104.09864</a>
+                                    </div>
+                                    <div class="citation-item">
+                                        &bull; Peng et al. (2023) <em>YaRN: Efficient Context Window Extension</em>. <a href="https://arxiv.org/abs/2309.00071" target="_blank">arXiv:2309.00071</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Concept 3: FlashAttention -->
+                            <div class="concept-card">
+                                <div>
+                                    <div class="concept-header">
+                                        <h5 class="concept-title">3. FlashAttention &amp; I/O-Aware Exact Attention</h5>
+                                        <span class="badge-tag">GPU Memory IO</span>
+                                    </div>
+                                    <p class="small text-secondary mb-2">
+                                        Tiles the attention matrix across high-speed on-chip GPU SRAM blocks. Computes exact softmax incrementally via online scaling factors, reducing High-Bandwidth Memory (HBM) read/writes from $O(N^2)$ to $O(N)$.
+                                    </p>
+                                    <div class="math-preview">
+                                        SRAM Tile: m_new = max(m_prev, max(S_ij)), l_new = e^(m_prev - m_new) * l_prev + &Sigma; e^(S_ij - m_new)
+                                    </div>
+                                    <div class="concept-glacier-anchor">
+                                        <i class="fa-solid fa-code me-1"></i> Glacier.Gpu/BidirectionalAttentionPtx.cs &amp; D3D12 HLSL
+                                    </div>
+                                </div>
+                                <div class="concept-citation-list">
+                                    <div class="citation-item">
+                                        &bull; Dao et al. (2022) <em>FlashAttention: Fast and Memory-Efficient Exact Attention</em>. <a href="https://arxiv.org/abs/2205.14135" target="_blank">arXiv:2205.14135</a>
+                                    </div>
+                                    <div class="citation-item">
+                                        &bull; Dao (2023) <em>FlashAttention-2: Faster Attention with Better Parallelism</em>. <a href="https://arxiv.org/abs/2307.08691" target="_blank">arXiv:2307.08691</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Concept 4: SIMD Vectorization -->
+                            <div class="concept-card">
+                                <div>
+                                    <div class="concept-header">
+                                        <h5 class="concept-title">4. Hardware SIMD Vectorization (AVX-512, Neon)</h5>
+                                        <span class="badge-tag">Hardware Intrinsics</span>
+                                    </div>
+                                    <p class="small text-secondary mb-2">
+                                        Executes Single Instruction Multiple Data across wide hardware registers (Vector512, Vector256). Vectorizes inner loops to calculate 16 single-precision floats or 64 8-bit integers per instruction cycle.
+                                    </p>
+                                    <div class="math-preview">
+                                        Vector512&lt;float&gt; c = FusedMultiplyAdd(a, b, c) // 16 parallel FMAs
+                                    </div>
+                                    <div class="concept-glacier-anchor">
+                                        <i class="fa-solid fa-code me-1"></i> Glacier.Polaris/ComputeKernels/ &amp; Glacier.Vector
+                                    </div>
+                                </div>
+                                <div class="concept-citation-list">
+                                    <div class="citation-item">
+                                        &bull; Intel (2024) <em>Intel 64 and IA-32 Architectures Optimization Manual</em>. <a href="https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html" target="_blank">Intel Docs</a>
+                                    </div>
+                                    <div class="citation-item">
+                                        &bull; Lemire, D. (2019) <em>Parsing Gigabytes of JSON per Second</em>. <a href="https://arxiv.org/abs/1902.08318" target="_blank">arXiv:1902.08318</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Concept 5: Apache Arrow Columnar Memory -->
+                            <div class="concept-card">
+                                <div>
+                                    <div class="concept-header">
+                                        <h5 class="concept-title">5. Apache Arrow Columnar Memory Layout</h5>
+                                        <span class="badge-tag">Memory Systems</span>
+                                    </div>
+                                    <p class="small text-secondary mb-2">
+                                        Standardized contiguous columnar memory format with 64-byte alignment and validity bitmasks. Enables zero-copy record batch sharing across processes and hardware backends without serialization penalties.
+                                    </p>
+                                    <div class="math-preview">
+                                        Column Chunk: [Validity Bitmask] | [Contiguous Fixed-Width Data Span]
+                                    </div>
+                                    <div class="concept-glacier-anchor">
+                                        <i class="fa-solid fa-code me-1"></i> Glacier.Storage/Arrow/ &amp; Glacier.Polaris.DataFrame
+                                    </div>
+                                </div>
+                                <div class="concept-citation-list">
+                                    <div class="citation-item">
+                                        &bull; Apache Software Foundation. <em>Apache Arrow Columnar Format Specification</em>. <a href="https://arrow.apache.org/docs/format/Columnar.html" target="_blank">Arrow Spec</a>
+                                    </div>
+                                    <div class="citation-item">
+                                        &bull; Leis et al. (2014) <em>Morsel-Driven Parallelism for In-Memory Database Engines</em>. SIGMOD. <a href="https://doi.org/10.1145/2588555.2610507" target="_blank">DOI: 10.1145/2588555.2610507</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Concept 6: Zero-Copy Unified Memory -->
+                            <div class="concept-card">
+                                <div>
+                                    <div class="concept-header">
+                                        <h5 class="concept-title">6. Zero-Copy Unified Memory &amp; APU Coherency</h5>
+                                        <span class="badge-tag">Heterogeneous Silicon</span>
+                                    </div>
+                                    <p class="small text-secondary mb-2">
+                                        Shared physical silicon fabric (LPDDR5X/DDR5) connecting CPU Zen cores and GPU Compute Units. Eliminates PCIe bus transfer staging, achieving sub-300ns coherency latency and 34+ GB/s zero-copy bandwidth.
+                                    </p>
+                                    <div class="math-preview">
+                                        CPU &harr; Unified Fabric &harr; GPU RDNA Compute Units (Direct Virtual Pointer byte*)
+                                    </div>
+                                    <div class="concept-glacier-anchor">
+                                        <i class="fa-solid fa-code me-1"></i> Glacier.Gpu/Engines/AmdRdnaEngine.cs &amp; HeterogeneousEngine.cs
+                                    </div>
+                                </div>
+                                <div class="concept-citation-list">
+                                    <div class="citation-item">
+                                        &bull; Hennessy, J. L., &amp; Patterson, D. A. (2017). <em>Computer Architecture: A Quantitative Approach</em> (6th ed.). Morgan Kaufmann.
+                                    </div>
+                                    <div class="citation-item">
+                                        &bull; AMD (2024) <em>AMD RDNA 3.5 Instruction Set Architecture Manual</em>. <a href="https://www.amd.com/en/developer/resources/technical-documentation.html" target="_blank">AMD Developer Docs</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Concept 7: Lock-Free Ring Buffers -->
+                            <div class="concept-card">
+                                <div>
+                                    <div class="concept-header">
+                                        <h5 class="concept-title">7. Lock-Free Ring Buffers &amp; MPMC Turn Leasing</h5>
+                                        <span class="badge-tag">Concurrency</span>
+                                    </div>
+                                    <p class="small text-secondary mb-2">
+                                        Dmitry Vyukov's bounded multi-producer multi-consumer circular queue. Employs sequence counter turn leases and 64-byte CPU cache line padding to prevent false sharing and eliminate mutex synchronization stalls.
+                                    </p>
+                                    <div class="math-preview">
+                                        Slot Index: slot = pos &amp; (BufferCapacity - 1); Sequence lease: turn = pos
+                                    </div>
+                                    <div class="concept-glacier-anchor">
+                                        <i class="fa-solid fa-code me-1"></i> Glacier.Gpu/RingBuffer/PersistentRingBuffer.cs &amp; GpuWorkTask.cs
+                                    </div>
+                                </div>
+                                <div class="concept-citation-list">
+                                    <div class="citation-item">
+                                        &bull; Vyukov, D. (2014) <em>Bounded MPMC Queue Algorithm</em>. <a href="https://www.1024cores.net/home/lock-free-algorithms/queues/bounded-mpmc-queue" target="_blank">1024cores.net</a>
+                                    </div>
+                                    <div class="citation-item">
+                                        &bull; Herlihy, M., &amp; Shavit, N. (2012). <em>The Art of Multiprocessor Programming</em>. Morgan Kaufmann.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Concept 8: Quantization Super-Blocks -->
+                            <div class="concept-card">
+                                <div>
+                                    <div class="concept-header">
+                                        <h5 class="concept-title">8. Quantization Super-Blocks (Q4_K, IQ3_S, 1.58-Bit)</h5>
+                                        <span class="badge-tag">Model Compression</span>
+                                    </div>
+                                    <p class="small text-secondary mb-2">
+                                        Super-block packaging of 256 weights with hierarchical sub-block scaling factors. Enables integer dot products without decompressing to FP32, reducing weights to 2.5–4.5 bits per parameter with minimal perplexity degradation.
+                                    </p>
+                                    <div class="math-preview">
+                                        BlockQ4_K: 256 elements in 144 bytes &bull; BitNet 1.58-bit: W &isin; {-1, 0, +1}
+                                    </div>
+                                    <div class="concept-glacier-anchor">
+                                        <i class="fa-solid fa-code me-1"></i> Glacier.Inference/Quant/BlockTypes.cs &amp; QuantKernels.VecDot.cs
+                                    </div>
+                                </div>
+                                <div class="concept-citation-list">
+                                    <div class="citation-item">
+                                        &bull; Dettmers et al. (2022) <em>LLM.int8(): 8-bit Matrix Multiplication for Transformers</em>. NeurIPS. <a href="https://arxiv.org/abs/2208.07339" target="_blank">arXiv:2208.07339</a>
+                                    </div>
+                                    <div class="citation-item">
+                                        &bull; Wang et al. (2024) <em>The Era of 1-bit LLMs: All Large Language Models are in 1.58 Bits</em>. <a href="https://arxiv.org/abs/2402.17764" target="_blank">arXiv:2402.17764</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================================================= -->
+                <!-- TAB 5: REPOSITORY DOCUMENTATION STARTER KIT -->
+                <!-- ========================================================================= -->
+                <div class="tab-pane fade" id="tab-starter" role="tabpanel" aria-labelledby="tab-btn-starter">
+                    <div class="hub-content-pane">
+                        <div class="mb-4">
+                            <h3 class="mb-1"><i class="fa-solid fa-toolbox text-cyan me-2"></i>Repository Documentation Starter Kit</h3>
+                            <p class="text-secondary mb-0">Production-ready, copy-paste starter templates implementing the Glacier Hybrid Standard. View, copy, or download template files for any repository in the ecosystem.</p>
+                        </div>
+
+                        <!-- Template Viewer -->
+                        <div class="template-viewer mb-4">
+                            <div class="template-viewer-toolbar">
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button class="template-tab-btn filter-pill active" data-template="readme"><i class="fa-brands fa-markdown me-1"></i> README_TEMPLATE.md</button>
+                                    <button class="template-tab-btn filter-pill" data-template="architecture"><i class="fa-solid fa-sitemap me-1"></i> ARCHITECTURE_TEMPLATE.md</button>
+                                    <button class="template-tab-btn filter-pill" data-template="usage"><i class="fa-solid fa-terminal me-1"></i> USAGE_TEMPLATE.md</button>
+                                    <button class="template-tab-btn filter-pill" data-template="diagrams"><i class="fa-solid fa-diagram-project me-1"></i> DIAGRAMS_TEMPLATE.md</button>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button id="template-copy-btn" class="btn btn-sm btn-cyan"><i class="fa-solid fa-copy me-1"></i> Copy Markdown</button>
+                                    <button id="template-download-btn" class="btn btn-sm btn-outline-cyan"><i class="fa-solid fa-download me-1"></i> Download .md</button>
+                                </div>
+                            </div>
+                            <pre id="template-code-display" class="template-code-box mb-0"></pre>
+                        </div>
+
+                        <!-- Conformance Checklist -->
+                        <div class="p-3 bg-primary border border-secondary rounded">
+                            <h5 class="text-white mb-2"><i class="fa-solid fa-clipboard-check text-cyan me-2"></i>Documentation Conformance Checklist</h5>
+                            <div class="row g-2 small text-secondary">
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center mb-1"><i class="fa-solid fa-check text-success-ste me-2"></i> All sentences under word caps (&le;20 words for instructions, &le;25 for descriptions).</div>
+                                    <div class="d-flex align-items-center mb-1"><i class="fa-solid fa-check text-success-ste me-2"></i> Active voice used throughout descriptive sections; imperative mood for procedures.</div>
+                                    <div class="d-flex align-items-center mb-1"><i class="fa-solid fa-check text-success-ste me-2"></i> Noun clusters strictly limited to 3 or fewer consecutive nouns.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center mb-1"><i class="fa-solid fa-check text-success-ste me-2"></i> Diátaxis 4-quadrant layout respected (no tutorials bleeding into technical references).</div>
+                                    <div class="d-flex align-items-center mb-1"><i class="fa-solid fa-check text-success-ste me-2"></i> Native GitHub Mermaid diagrams included for C4 Container and Component views.</div>
+                                    <div class="d-flex align-items-center mb-1"><i class="fa-solid fa-check text-success-ste me-2"></i> Physical hardware benchmark table included with CPU/GPU environment specifications.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
