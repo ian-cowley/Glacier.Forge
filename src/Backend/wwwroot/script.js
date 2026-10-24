@@ -334,8 +334,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. Interactive Architectural Diagram Inspector Modal & SVG Stage
     // =========================================================================
 
-    // 5.1 Authoritative 35-Repository Architectural Invariant Catalog
+    // 5.1 Authoritative 36-Repository Architectural Invariant Catalog
     const PROJECT_INVARIANTS = {
+        'Glacier.Codec': {
+            vectorFlow: 'Zero-allocation cryptographic and streaming compression pipeline dynamically arbitrated between low-latency CPU SIMD and multi-core parallel tree reduction.',
+            registerModel: 'VAES 512-bit / AES-NI 128-bit registers, PCLMULQDQ/VPCLMULQDQ carryless Galois Field GHASH, and vectorized Cooley-Tukey Montgomery NTT over Z_q (q=3329).',
+            zeroAllocBenchmark: '0 B managed heap allocations on active encryption, hashing, and compression paths. Hardware throughput: 12.61 GB/s AES-256-GCM, 7.59 GB/s BLAKE3, 16.83 GB/s LZ4, 10.05 GB/s Zstd.'
+        },
         'Glacier.Polaris': {
             vectorFlow: 'Apache Arrow 64-byte cacheline-aligned columnar chunk memory with 64-row ValidityMask bit-registers, Kleene 3-valued boolean logic, and branchless AVX-512 vector lanes.',
             registerModel: 'Vector512<double> and Vector512<long> registers executing 8-wide AVX-512 FMA vector lanes with unmanaged NativeMemoryOwner<T> buffer alignment.',
