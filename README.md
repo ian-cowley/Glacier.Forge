@@ -49,7 +49,7 @@ flowchart TD
         C --> F[ReadOnlySpan byte Stream]
         E --> F
         F --> G[System.Text.Json Utf8JsonReader Loop]
-        G -->|reader.Skip| H[Nested JSON Arrays/Objects Bypassed]
+        G -->|reader.TrySkip| H[Nested JSON Arrays/Objects Bypassed]
         G -->|reader.ValueSpan| I[Property Name and Value Slices]
     end
 
@@ -98,7 +98,7 @@ flowchart TD
   - **PostgreSQL**: Implements `COPY ... FROM STDIN (FORMAT BINARY)` directly over contiguous UTF-8 byte buffers.
   - **Microsoft SQL Server**: Uses a custom `PooledBatchDataReader : DbDataReader` with `SqlChars` pointers feeding `SqlBulkCopy`.
 - **Zero-Copy Hybrid I/O Dispatcher**: Uses OS `RandomAccess` with pooled arrays for files under 1 MB. Uses `MemoryMappedFile` memory views with 1 GB line-aligned chunks for multi-gigabyte files.
-- **Comprehensive Data Type Support**: Natively validates `int`, `smallint`, `bigint`, `uuid`/`guid`, `bool`, `datetime`, `date`, `float`, `decimal`, `json`/`jsonb`, and `varchar`/`text`.
+- **Comprehensive Data Type Support**: Natively validates `int`, `smallint`, `bigint`, `uuid`/`guid`, `bool`, `datetime`, `date`, `float`, `decimal`, `json`/`jsonb`, and `varchar`/`nvarchar`/`char`/`nchar`/`text`.
 - **Dynamic Catalog Discovery**: Connects to the database on startup. Queries database catalog views (`sys.columns` or `information_schema.columns`) to configure in-memory schema rules automatically.
 - **Cryptographic License Manager**: Verifies optional digital signatures using ECDSA P-256 and SHA-256 with constant-time equality checks. Fully compatible with Native AOT compilation (`PublishAot=true`).
 
@@ -191,11 +191,12 @@ Glacier.Forge/
 │   │   ├── SchemaValidator.cs        # Byte-space 256-ary Trie validator and type coercer
 │   │   ├── HybridIoDispatcher.cs     # Zero-copy dispatcher (RandomAccess vs MemoryMappedFile)
 │   │   ├── LicenseManager.cs         # Native AOT safe ECDSA P-256 license verifier
-│   │   ├── appsettings.json          # Database connection placeholders
+│   │   ├── appsettings.template.json # Sanitized connection string template (copy to appsettings.json)
 │   │   └── Glacier.Forge.csproj      # .NET 10 project definition
 │   │
 │   ├── Backend/                      # Web API for licensing validation and key generation
 │   │   ├── Program.cs                # Minimal API with HMAC webhook and ECDSA signing
+│   │   ├── appsettings.template.json # Sanitized backend configuration template
 │   │   ├── wwwroot/                  # Production web portal for glaciersoftware.dev
 │   │   │   ├── index.html            # Documentation hub and ecosystem catalog
 │   │   │   └── style.css             # Dark Stark theme stylesheet
@@ -209,6 +210,7 @@ Glacier.Forge/
 │   └── Glacier.Forge.Tests/          # Complete xUnit validation and integration test suite
 │       ├── ParserTests.cs            # Ingestion pipeline, file stream, and license tests
 │       ├── ValidatorTests.cs         # Trie match and value parsing tests
+│       ├── TrackAForgeAdversarialTests.cs # Security, JSON unescaping, and boundary tests
 │       └── Glacier.Forge.Tests.csproj# xUnit test project definition
 │
 ├── ARCHITECTURE_SPEC.md              # Arc42-aligned technical architecture specification

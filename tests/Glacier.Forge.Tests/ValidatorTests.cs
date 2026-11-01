@@ -106,6 +106,18 @@ public class ValidatorTests
         byte[] largeText = System.Text.Encoding.UTF8.GetBytes(new string('A', 8000));
         sink.WriteField(2, largeText, largeText);
         sink.EndRecord(commit: true, largeText);
+
+        Assert.Equal(2, sink.BufferedRecordCount);
+        Assert.Equal(42, sink.GetBufferedInt32(0, 0));
+        Assert.True(sink.GetBufferedBoolean(1, 0));
+        Assert.True(sink.IsBufferedNull(2, 0));
+        Assert.Equal(Guid.Parse("00000000-0000-0000-0000-000000000001"), sink.GetBufferedGuid(3, 0));
+
+        Assert.Equal(43, sink.GetBufferedInt32(0, 1));
+        Assert.False(sink.GetBufferedBoolean(1, 1));
+        Assert.False(sink.IsBufferedNull(2, 1));
+        Assert.Equal(8000, sink.GetBufferedString(2, 1).Length);
+        Assert.True(sink.IsBufferedNull(3, 1));
     }
 
     [Fact]

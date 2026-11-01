@@ -232,7 +232,7 @@ sequenceDiagram
         Trie-->>Forge: ColumnSchema matched
         Forge->>Trie: IsValidFormat(colSchema, ref reader)
         alt Valid Record
-            Forge->>Sink: WriteField(colIndex, valueSlice)
+            Forge->>Sink: WriteField(colIndex, valueSlice, line, kind)
             Forge->>Sink: EndRecord(commit: true)
             opt Buffer reached 10,000 records
                 Forge->>Sink: FlushBatchAsync()
@@ -240,7 +240,7 @@ sequenceDiagram
             end
         else Invalid Record
             Forge->>Sink: EndRecord(commit: false)
-            Forge->>Console: Write rejected line to stderr
+            Forge->>Console: Write redacted DLQ diagnostic (#N, bytes) to stderr
         end
         Forge->>Reader: AdvanceTo(examined, consumed)
     end
@@ -364,13 +364,15 @@ flowchart LR
 - **Signature Format**: `DSASignatureFormat.IeeeP1363FixedFieldConcatenation` (raw $R \parallel S$ 64-byte binary signature).
 - **Perpetual Fallback Rule**: Perpetual licenses never expire for versions compiled before the subscription end date. The assembly build date is extracted from `AssemblyInformationalVersionAttribute` and evaluated against `payload.SubscriptionEnd`.
 
-### 8.5 Error Recovery and Dead-Letter Handling
+### 8.5 Error Recovery, Escape Unpacking, and Dead-Letter Handling
+
+Strings containing JSON escape sequences (`\"`, `\\`, `\n`, `\uXXXX`) are unescaped with `0 B` heap allocation via `reader.CopyString` into a reusable per-record pooled buffer (`_recordScratch`) before staging into `SqlServerSink` or `PostgresSink`.
 
 When the ingestion engine encounters a malformed JSON line, an unmappable field, or a nullability violation:
 1. The active record in the sink is marked invalid via `sink.EndRecord(commit: false)`.
 2. The sink resets the record's buffer offsets, discarding buffered values without flushing.
-3. The raw rejected byte line is emitted directly to `Console.Error` (`stderr`).
-4. Downstream operators can redirect `stderr` to a separate dead-letter queue (DLQ) file without interrupting standard input ingestion.
+3. A PII-redacted diagnostic entry (`[DLQ] Rejected invalid record #N (M bytes).`) is emitted to `Console.Error` (`stderr`), preventing raw secret or PII leakage into log streams.
+4. Downstream operators can redirect `stderr` to a separate dead-letter audit log without interrupting standard input ingestion.
 
 ---
 
@@ -425,7 +427,7 @@ Glacier.Forge Quality Model
 ### 10.2 Quality Scenarios
 
 - **Scenario QS-1 (High-Velocity Streaming)**: Under a sustained input stream of 500,000 JSONL records per second from an external process, Glacier.Forge must buffer and commit records without triggering a Gen 0 Garbage Collection event.
-- **Scenario QS-2 (Schema Drift Containment)**: When an LLM generates unexpected extra fields or arrays in the JSON payload, the engine must skip the superfluous structures via `reader.Skip()` in zero-allocation byte space without failing valid fields.
+- **Scenario QS-2 (Schema Drift Containment)**: When an LLM generates unexpected extra fields or arrays in the JSON payload, the engine must skip the superfluous structures via `reader.TrySkip()` in zero-allocation byte space without failing valid fields.
 - **Scenario QS-3 (Network Stutter Resilience)**: If the incoming stream experiences delays or pauses, database connections must not stay open indefinitely. PostgreSQL binary `COPY` operations are opened exclusively during batch flushes.
 
 ---
@@ -436,7 +438,7 @@ Glacier.Forge Quality Model
 | :--- | :--- | :--- | :--- |
 | **Unbounded Single-Line JSON Length**: A single JSON line exceeding 2 MB could cause stack overflow if `stackalloc` is misused. | Low | High | Lines $\le 2048$ bytes use `stackalloc`. Lines $> 2048$ bytes safely fall back to `ArrayPool<byte>.Shared.Rent`. |
 | **Virtual Address Space Exhaustion**: Mapping multiple 50 GB files concurrently on 32-bit systems could fail. | Negligible | High | Glacier.Forge targets 64-bit architectures exclusively (`x64`, `arm64`). View accessors are promptly disposed in `finally` blocks. |
-| **Complex Nested JSON Ingestion**: Deeply nested JSON structures sent to a relational scalar column cannot be automatically mapped. | Medium | Low | Nested objects are bypassed via `reader.Skip()`. For columns typed as `json` or `jsonb`, raw byte spans are stored directly. |
+| **Complex Nested JSON Ingestion**: Deeply nested JSON structures sent to a relational scalar column cannot be automatically mapped. | Medium | Low | Nested objects on unknown columns are bypassed via `reader.TrySkip()`, while nested objects targeting scalar columns are cleanly rejected. For columns typed as `json` or `jsonb`, raw JSON UTF-8 spans are validated and stored directly. |
 
 ---
 

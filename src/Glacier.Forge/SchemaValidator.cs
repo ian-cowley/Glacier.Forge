@@ -149,9 +149,38 @@ public sealed class SchemaValidator
 
             case "varchar":
             case "nvarchar":
+            case "char":
+            case "nchar":
+            case "character":
+            case "bpchar":
             case "text":
             case "character varying":
+                if (reader.TokenType is JsonTokenType.StartObject or JsonTokenType.StartArray or JsonTokenType.EndObject or JsonTokenType.EndArray)
+                {
+                    return false;
+                }
                 if (schema.MaxLength <= 0) return true;
+                if (reader.TokenType == JsonTokenType.String && (reader.HasValueSequence || reader.ValueSpan.IndexOf((byte)'\\') >= 0))
+                {
+                    int maxBytes = reader.HasValueSequence ? checked((int)reader.ValueSequence.Length) : reader.ValueSpan.Length;
+                    byte[]? rented = null;
+                    Span<byte> unescapedBuf = maxBytes <= 1024
+                        ? stackalloc byte[1024]
+                        : (rented = System.Buffers.ArrayPool<byte>.Shared.Rent(maxBytes));
+                    try
+                    {
+                        int written = reader.CopyString(unescapedBuf);
+                        int unescapedChars = System.Text.Encoding.UTF8.GetCharCount(unescapedBuf[..written]);
+                        return unescapedChars <= schema.MaxLength;
+                    }
+                    finally
+                    {
+                        if (rented != null)
+                        {
+                            System.Buffers.ArrayPool<byte>.Shared.Return(rented);
+                        }
+                    }
+                }
                 int charCount = System.Text.Encoding.UTF8.GetCharCount(reader.ValueSpan);
                 return charCount <= schema.MaxLength;
 
@@ -171,6 +200,11 @@ public sealed class SchemaValidator
 
             case "json":
             case "jsonb":
+                if (reader.TokenType is JsonTokenType.StartObject or JsonTokenType.StartArray)
+                {
+                    var subReader = reader;
+                    return subReader.TrySkip();
+                }
                 return true;
 
             case "boolean":

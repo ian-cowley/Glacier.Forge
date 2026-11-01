@@ -51,13 +51,26 @@ Glacier.Forge --db <sqlserver|postgres> --table <schema.table_name> [options]
 
 ### 2.3 Environment Variable Overrides
 
-If you run Glacier.Forge in containerized or headless environments, you can supply parameters through environment variables:
+If you run Glacier.Forge in containerized or headless environments, you can supply parameters through environment variables (for local development, copy `appsettings.template.json` to a git-ignored `appsettings.json` or use `dotnet user-secrets`):
 
 | Environment Variable | Equivalent CLI Argument | Purpose |
 | :--- | :--- | :--- |
 | `ConnectionStrings__SqlServer` | `--conn <string>` | Default connection string for Microsoft SQL Server targets. |
 | `ConnectionStrings__Postgres` | `--conn <string>` | Default connection string for PostgreSQL targets. |
 | `GLACIER_LICENSE` | `--key <string>` | Cryptographic license key for enterprise compliance verification. |
+
+#### Backend Licensing Webhook & SMTP Environment Variables (`Backend`)
+
+| Environment Variable | Required | Purpose |
+| :--- | :--- | :--- |
+| `FORGE_WEBHOOK_SECRET` | **Yes** | HMAC-SHA256 shared secret ($\ge 16$ characters; fails closed against missing or placeholder values). |
+| `ECDSA_PRIVATE_KEY` | **Yes** (Prod) | PEM-encoded ECDSA P-256 signing private key for license issuance. |
+| `FORGE_SMTP_HOST` | Optional | Outbound SMTP server hostname for automated license email delivery. |
+| `FORGE_SMTP_PORT` | Optional | SMTP port (defaults to `587`). |
+| `FORGE_SMTP_USER` | Optional | SMTP authentication username. |
+| `FORGE_SMTP_PASSWORD` | Optional | SMTP authentication password. |
+| `FORGE_SMTP_FROM` | Optional | Sender email address for issued licenses. |
+| `FORGE_SMTP_ENABLE_SSL` | Optional | Enables STARTTLS/SSL transport encryption (defaults to `true`). |
 
 ### 2.4 Process Exit Codes
 
@@ -77,7 +90,7 @@ Glacier.Forge requires zero static model code, JSON Schema files, or mapping con
 ### 3.1 Database Catalog Discovery Queries
 
 #### Microsoft SQL Server Discovery Query
-The engine queries `sys.columns`, `sys.types`, and `sys.tables`:
+The engine queries `sys.columns` and `sys.types` (normalizing UTF-16 byte lengths on `nvarchar`/`nchar` to character counts):
 
 ```sql
 SELECT 
@@ -85,7 +98,11 @@ SELECT
     c.name AS ColumnName,
     t.name AS DataType,
     c.is_nullable AS IsNullable,
-    c.max_length AS MaxLength
+    CASE
+        WHEN t.name IN ('nvarchar', 'nchar') THEN (CASE WHEN c.max_length > 0 THEN c.max_length / 2 ELSE c.max_length END)
+        WHEN t.name IN ('varchar', 'char') THEN c.max_length
+        ELSE -1
+    END AS MaxLength
 FROM sys.columns c
 JOIN sys.types t ON c.user_type_id = t.user_type_id
 WHERE c.object_id = OBJECT_ID(@TableName)
@@ -117,19 +134,19 @@ The table below describes how raw UTF-8 byte spans are validated against databas
 | `smallint`, `int2` | `Number` | Validates via `Utf8Parser.TryParse(span, out short)`. |
 | `bigint`, `int8` | `Number` | Validates via `Utf8Parser.TryParse(span, out long)`. |
 | `uuid`, `uniqueidentifier`, `guid` | `String` (UUID format) | Validates via `Utf8Parser.TryParse(span, out Guid)`. |
-| `varchar`, `nvarchar`, `text` | `String` | Validates UTF-8 character length against `MaxLength`. |
+| `varchar`, `nvarchar`, `char`, `nchar`, `character`, `bpchar`, `text` | `String` | Unescapes JSON escapes via zero-alloc `reader.CopyString` and validates character count against `MaxLength`; rejects nested objects/arrays. |
 | `datetime`, `datetime2`, `timestamp` | `String` (ISO 8601) | Validates via `Utf8Parser.TryParse(span, out DateTime)`. |
 | `boolean`, `bool`, `bit` | `True`, `False`, literal numbers | Matches `"true"u8`, `"false"u8`, `"1"u8`, `"0"u8`. |
 | `float`, `double precision` | `Number` | Validates via `Utf8Parser.TryParse(span, out double)`. |
 | `decimal`, `numeric` | `Number` | Validates via `Utf8Parser.TryParse(span, out decimal)`. |
-| `json`, `jsonb` | Any valid JSON token | Passes raw UTF-8 span through directly. |
+| `json`, `jsonb` | Any valid JSON value (primitive, object, array) | Validates nested object/array syntax via `reader.TrySkip()` and slices raw JSON UTF-8 directly. |
 
 ### 3.3 Schema Mismatch Rules
 
 - **Unordered Fields**: JSON properties can appear in any order. The 256-ary Trie matches column names independently of field order.
-- **Superfluous Fields**: If the incoming JSON contains keys not present in the database table, the engine calls `reader.Skip()` to bypass the key and value without allocating memory.
+- **Superfluous Fields**: If the incoming JSON contains keys not present in the database table, the engine calls `reader.TrySkip()` to bypass the key and value without allocating memory.
 - **Missing Nullable Fields**: If a database column is omitted from a JSON line, the engine records a `NULL` indicator for that column.
-- **Missing Non-Nullable Fields**: If a database column is marked `NOT NULL` and does not appear in the JSON record, the engine rejects the record and writes it to `stderr`.
+- **Missing Non-Nullable Fields**: If a database column is marked `NOT NULL` and does not appear in the JSON record, the engine rejects the record and writes a PII-redacted diagnostic entry to `stderr`.
 - **ASCII Case Insensitivity**: Keys are matched case-insensitively using an inlined bit-shift function (`byte - 32`). For example, `userid`, `userId`, and `USERID` all resolve to `UserId`.
 
 ---
@@ -239,33 +256,31 @@ A record is rejected if any of the following conditions occur:
 3. **Nullability Violation**: A database column is marked `NOT NULL` and the record either omits the field or provides a `null` literal.
 4. **Length Violation**: A string value exceeds the column's defined `MaxLength`.
 
-### 7.2 Isolating Rejected Records via Dead-Letter Queue
+### 7.2 Isolating Rejected Records via Dead-Letter Diagnostics
 
 When a record fails validation:
 - The engine marks the record as invalid via `sink.EndRecord(commit: false)`.
-- The engine writes the raw rejected JSONL line to `Console.Error` (`stderr`).
+- To prevent sensitive PII or secret payloads from leaking into container or CI logs, the engine emits a **PII-redacted diagnostic entry** (`[DLQ] Rejected invalid record #N (M bytes).`) to `Console.Error` (`stderr`).
 - The engine writes progress and informational logs to `Console.Out` (`stdout`).
 
-Redirect `stderr` to capture all rejected records into a separate dead-letter log file:
+Redirect `stderr` to capture all rejection diagnostics into a separate audit log file:
 
 ```bash
-# Capture rejected records into dlq.jsonl while ingesting valid records
-Glacier.Forge --db postgres --table public.events --file incoming.jsonl 2> dlq.jsonl
+# Capture PII-redacted rejection diagnostics into dlq.log while ingesting valid records
+Glacier.Forge --db postgres --table public.events --file incoming.jsonl 2> dlq.log
 ```
 
-### 7.3 Inspecting and Reprocessing Dead-Letter Records
+### 7.3 Auditing and Reprocessing Rejected Records
 
-Inspect the dead-letter log to diagnose format mismatches:
+Inspect the dead-letter diagnostic log to identify the 1-based record numbers and byte lengths of rejected lines without exposing sensitive payloads in log aggregators:
 
 ```bash
-head -n 5 dlq.jsonl
+head -n 5 dlq.log
+# Example output:
+# [DLQ] Rejected invalid record #14 (128 bytes).
 ```
 
-After correcting schema definitions or applying necessary `--map` flags, reprocess the dead-letter file:
-
-```bash
-Glacier.Forge --db postgres --table public.events --file dlq.jsonl 2> dlq_unresolved.jsonl
-```
+Extract the specific line numbers from the protected source dataset within a secure environment, apply schema fixes or `--map` flags, and re-run ingestion on the remediated subset.
 
 ---
 

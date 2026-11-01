@@ -19,10 +19,11 @@ public sealed class PostgresSink : IRelationalSink
     private enum FieldLiteralKind : byte
     {
         None = 0,
-        Slice = 1,
-        True = 2,
-        False = 3,
-        Null = 4
+        LineSlice = 1,
+        ScratchSlice = 2,
+        True = 3,
+        False = 4,
+        Null = 5
     }
 
     // Local in-memory batch buffers to prevent holding connection/transactions open during slow ingestion
@@ -35,10 +36,15 @@ public sealed class PostgresSink : IRelationalSink
     private int[][] _stringOffsets = null!;
     private int[][] _stringLengths = null!;
 
+    // Reusable per-record scratch buffer for unescaped strings / non-line spans (zero steady-state GC allocs)
+    private byte[] _recordScratch = null!;
+    private int _recordScratchOffset = 0;
+
     // Per-record field buffering offsets to handle out-of-order and missing JSON fields
     private int[] _fieldOffsets = null!;
     private int[] _fieldLengths = null!;
     private bool[] _fieldPresent = null!;
+    private bool[] _fieldPreserveLiterals = null!;
     private FieldLiteralKind[] _fieldKinds = null!;
 
     public Task InitializeAsync(string connectionString, string targetTable, ColumnSchema[] schema)
@@ -50,7 +56,10 @@ public sealed class PostgresSink : IRelationalSink
         _fieldOffsets = new int[schema.Length];
         _fieldLengths = new int[schema.Length];
         _fieldPresent = new bool[schema.Length];
+        _fieldPreserveLiterals = new bool[schema.Length];
         _fieldKinds = new FieldLiteralKind[schema.Length];
+        _recordScratch = new byte[4096];
+        _recordScratchOffset = 0;
 
         _columnBuffers = new Array[schema.Length];
         _nullIndicators = new bool[schema.Length][];
@@ -114,32 +123,69 @@ public sealed class PostgresSink : IRelationalSink
     public void StartRecord()
     {
         Array.Clear(_fieldPresent, 0, _fieldPresent.Length);
+        Array.Clear(_fieldPreserveLiterals, 0, _fieldPreserveLiterals.Length);
         Array.Clear(_fieldKinds, 0, _fieldKinds.Length);
+        _recordScratchOffset = 0;
         _isRecordActive = true;
     }
 
-    public void WriteField(int colIndex, ReadOnlySpan<byte> value, ReadOnlySpan<byte> line)
+    public void WriteField(int colIndex, ReadOnlySpan<byte> value, ReadOnlySpan<byte> line, FieldValueKind kind = FieldValueKind.Auto)
     {
         if (!_isRecordActive)
             throw new InvalidOperationException("No active record. Call StartRecord first.");
 
-        if (value.SequenceEqual("true"u8))
+        if (kind == FieldValueKind.Null)
+        {
+            _fieldKinds[colIndex] = FieldLiteralKind.Null;
+            _fieldPresent[colIndex] = true;
+            return;
+        }
+
+        if (kind == FieldValueKind.BooleanTrue)
         {
             _fieldKinds[colIndex] = FieldLiteralKind.True;
             _fieldPresent[colIndex] = true;
             return;
         }
 
-        if (value.SequenceEqual("false"u8))
+        if (kind == FieldValueKind.BooleanFalse)
         {
             _fieldKinds[colIndex] = FieldLiteralKind.False;
             _fieldPresent[colIndex] = true;
             return;
         }
 
-        if (value.IsEmpty || value.SequenceEqual("null"u8))
+        if (kind == FieldValueKind.Auto)
         {
-            _fieldKinds[colIndex] = FieldLiteralKind.Null;
+            if (value.SequenceEqual("true"u8))
+            {
+                _fieldKinds[colIndex] = FieldLiteralKind.True;
+                _fieldPresent[colIndex] = true;
+                return;
+            }
+
+            if (value.SequenceEqual("false"u8))
+            {
+                _fieldKinds[colIndex] = FieldLiteralKind.False;
+                _fieldPresent[colIndex] = true;
+                return;
+            }
+
+            if (value.IsEmpty || value.SequenceEqual("null"u8))
+            {
+                _fieldKinds[colIndex] = FieldLiteralKind.Null;
+                _fieldPresent[colIndex] = true;
+                return;
+            }
+        }
+
+        _fieldPreserveLiterals[colIndex] = kind is FieldValueKind.ScalarOrString or FieldValueKind.RawJson;
+
+        if (value.IsEmpty)
+        {
+            _fieldOffsets[colIndex] = 0;
+            _fieldLengths[colIndex] = 0;
+            _fieldKinds[colIndex] = FieldLiteralKind.ScratchSlice;
             _fieldPresent[colIndex] = true;
             return;
         }
@@ -150,22 +196,39 @@ public sealed class PostgresSink : IRelationalSink
             fixed (byte* pVal = value)
             {
                 long diff = pVal - pLine;
-                if (diff >= 0 && diff + value.Length <= line.Length)
+                if (pLine != null && diff >= 0 && diff + value.Length <= line.Length)
                 {
                     _fieldOffsets[colIndex] = (int)diff;
                     _fieldLengths[colIndex] = value.Length;
-                    _fieldKinds[colIndex] = FieldLiteralKind.Slice;
+                    _fieldKinds[colIndex] = FieldLiteralKind.LineSlice;
                     _fieldPresent[colIndex] = true;
                 }
                 else
                 {
-                    _fieldKinds[colIndex] = FieldLiteralKind.Slice;
-                    _fieldOffsets[colIndex] = 0;
-                    _fieldLengths[colIndex] = 0;
+                    int start = AppendToRecordScratch(value);
+                    _fieldOffsets[colIndex] = start;
+                    _fieldLengths[colIndex] = value.Length;
+                    _fieldKinds[colIndex] = FieldLiteralKind.ScratchSlice;
                     _fieldPresent[colIndex] = true;
                 }
             }
         }
+    }
+
+    private int AppendToRecordScratch(ReadOnlySpan<byte> value)
+    {
+        if (_recordScratchOffset + value.Length > _recordScratch.Length)
+        {
+            int newCap = Math.Max(_recordScratch.Length * 2, _recordScratchOffset + value.Length + 1024);
+            byte[] grown = new byte[newCap];
+            Buffer.BlockCopy(_recordScratch, 0, grown, 0, _recordScratchOffset);
+            _recordScratch = grown;
+        }
+
+        int offset = _recordScratchOffset;
+        value.CopyTo(_recordScratch.AsSpan(offset, value.Length));
+        _recordScratchOffset += value.Length;
+        return offset;
     }
 
     public void EndRecord(bool commit, ReadOnlySpan<byte> line)
@@ -217,15 +280,27 @@ public sealed class PostgresSink : IRelationalSink
                 continue;
             }
 
-            if (_fieldOffsets[i] < 0 || _fieldOffsets[i] + _fieldLengths[i] > line.Length)
+            ReadOnlySpan<byte> valSpan;
+            if (_fieldKinds[i] == FieldLiteralKind.LineSlice)
+            {
+                if (_fieldOffsets[i] < 0 || _fieldOffsets[i] + _fieldLengths[i] > line.Length)
+                {
+                    _nullIndicators[i][_currentRecordIndex] = true;
+                    continue;
+                }
+                valSpan = line.Slice(_fieldOffsets[i], _fieldLengths[i]);
+            }
+            else if (_fieldKinds[i] == FieldLiteralKind.ScratchSlice)
+            {
+                valSpan = _recordScratch.AsSpan(_fieldOffsets[i], _fieldLengths[i]);
+            }
+            else
             {
                 _nullIndicators[i][_currentRecordIndex] = true;
                 continue;
             }
 
-            ReadOnlySpan<byte> valSpan = line.Slice(_fieldOffsets[i], _fieldLengths[i]);
-
-            if (valSpan.IsEmpty || valSpan.SequenceEqual("null"u8))
+            if (!_fieldPreserveLiterals[i] && (valSpan.IsEmpty || valSpan.SequenceEqual("null"u8)))
             {
                 _nullIndicators[i][_currentRecordIndex] = true;
                 continue;
@@ -496,18 +571,23 @@ public sealed class PostgresSink : IRelationalSink
         };
     }
 
+    internal int BufferedRecordCount => _currentRecordIndex;
+    internal bool IsBufferedNull(int colIndex, int rowIndex) => _nullIndicators[colIndex][rowIndex];
+    internal int GetBufferedInt32(int colIndex, int rowIndex) => ((int[])_columnBuffers[colIndex])[rowIndex];
+    internal bool GetBufferedBoolean(int colIndex, int rowIndex) => ((bool[])_columnBuffers[colIndex])[rowIndex];
+    internal Guid GetBufferedGuid(int colIndex, int rowIndex) => ((Guid[])_columnBuffers[colIndex])[rowIndex];
+    internal string GetBufferedString(int colIndex, int rowIndex)
+    {
+        int offset = _stringOffsets[colIndex][rowIndex];
+        int length = _stringLengths[colIndex][rowIndex];
+        return System.Text.Encoding.UTF8.GetString(_stringBuffer, offset, length);
+    }
+
     public async ValueTask DisposeAsync()
     {
         if (_currentRecordIndex > 0)
         {
-            try
-            {
-                await FlushBatchAsync();
-            }
-            catch
-            {
-                // Suppress errors during final flush on dispose
-            }
+            await FlushBatchAsync();
         }
     }
 }

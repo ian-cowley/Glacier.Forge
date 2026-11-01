@@ -5,7 +5,9 @@
 
 ## User Secrets & App Settings
 secrets.json
-appsettings.Development.json
+**/appsettings.json
+**/appsettings.*.json
+!**/appsettings.template.json
 *.env
 *.env.*
 *.pem

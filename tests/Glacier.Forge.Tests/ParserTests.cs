@@ -6,8 +6,10 @@ using Glacier.Forge;
 
 namespace Glacier.Forge.Tests;
 
+[Collection("LicenseTests")]
 public class ParserTests
 {
+    internal static string DefaultTestPublicKeyPem => _testEcdsa.ExportSubjectPublicKeyInfoPem();
     // Ephemeral in-memory key pair generated dynamically at test runtime (NO static private key)
     private static readonly System.Security.Cryptography.ECDsa _testEcdsa = System.Security.Cryptography.ECDsa.Create();
 
@@ -52,7 +54,7 @@ public class ParserTests
 
         public Task InitializeAsync(string connectionString, string targetTable, ColumnSchema[] schema) => Task.CompletedTask;
         public void StartRecord() { Started = true; }
-        public void WriteField(int colIndex, ReadOnlySpan<byte> value, ReadOnlySpan<byte> line) { WriteCount++; }
+        public void WriteField(int colIndex, ReadOnlySpan<byte> value, ReadOnlySpan<byte> line, FieldValueKind kind = FieldValueKind.Auto) { WriteCount++; }
         public void EndRecord(bool commit, ReadOnlySpan<byte> line) { Ended = true; Committed = commit; }
         public Task FlushBatchAsync() => Task.CompletedTask;
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
@@ -173,7 +175,7 @@ public class ParserTests
 
         public Task InitializeAsync(string connectionString, string targetTable, ColumnSchema[] schema) => Task.CompletedTask;
         public void StartRecord() => Started = true;
-        public void WriteField(int colIndex, ReadOnlySpan<byte> value, ReadOnlySpan<byte> line)
+        public void WriteField(int colIndex, ReadOnlySpan<byte> value, ReadOnlySpan<byte> line, FieldValueKind kind = FieldValueKind.Auto)
         {
             Fields.Add((colIndex, System.Text.Encoding.UTF8.GetString(value)));
         }

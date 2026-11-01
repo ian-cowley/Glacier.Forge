@@ -146,7 +146,7 @@ public static class Program
             validator.LoadSchema(columns, customMappings);
 
             // 3. Initialize Sink
-            IRelationalSink sink = dbType switch
+            await using IRelationalSink sink = dbType switch
             {
                 DatabaseType.SqlServer => new SqlServerSink(),
                 DatabaseType.Postgres => new PostgresSink(),
@@ -161,7 +161,6 @@ public static class Program
                 if (!System.IO.File.Exists(inputFilePath))
                 {
                     Console.Error.WriteLine($"Error: Input file '{inputFilePath}' not found.");
-                    await sink.DisposeAsync();
                     return 1;
                 }
 
@@ -177,7 +176,6 @@ public static class Program
                 await IngestStreamAsync(reader, sink, validator, columns);
             }
 
-            await sink.DisposeAsync();
             return 0;
         }
         catch (Exception ex)
@@ -202,7 +200,11 @@ public static class Program
                     c.name AS ColumnName,
                     t.name AS DataType,
                     c.is_nullable AS IsNullable,
-                    CASE WHEN t.name IN ('varchar', 'nvarchar', 'char', 'nchar') THEN c.max_length ELSE -1 END AS MaxLength
+                    CASE 
+                        WHEN t.name IN ('nvarchar', 'nchar') THEN (CASE WHEN c.max_length > 0 THEN c.max_length / 2 ELSE c.max_length END)
+                        WHEN t.name IN ('varchar', 'char') THEN c.max_length 
+                        ELSE -1 
+                    END AS MaxLength
                 FROM sys.columns c
                 JOIN sys.types t ON c.user_type_id = t.user_type_id
                 WHERE c.object_id = OBJECT_ID(@TableName)
@@ -374,14 +376,7 @@ public static class Program
                     else
                     {
                         failCount++;
-                        try
-                        {
-                            Console.Error.WriteLine(System.Text.Encoding.UTF8.GetString(lineBytes));
-                        }
-                        catch
-                        {
-                            Console.Error.WriteLine("Invalid UTF-8 line rejected");
-                        }
+                        Console.Error.WriteLine($"[DLQ] Rejected invalid record #{processedCount} ({lineBytes.Length} bytes).");
                     }
                 }
             }
@@ -439,14 +434,7 @@ public static class Program
             bool success = ProcessRecord(lineBytes, sink, validator, schema);
             if (!success)
             {
-                try
-                {
-                    Console.Error.WriteLine(System.Text.Encoding.UTF8.GetString(lineBytes));
-                }
-                catch
-                {
-                    Console.Error.WriteLine("Invalid UTF-8 line rejected");
-                }
+                Console.Error.WriteLine($"[DLQ] Rejected invalid record ({lineBytes.Length} bytes).");
             }
             return success;
         }
@@ -464,6 +452,7 @@ public static class Program
         bool recordValid = true;
         Span<bool> presentFields = stackalloc bool[schema.Length];
         presentFields.Clear();
+        Span<byte> unescapeScratch = stackalloc byte[1024];
 
         try
         {
@@ -484,9 +473,37 @@ public static class Program
 
                 if (reader.TokenType == System.Text.Json.JsonTokenType.PropertyName)
                 {
-                    ReadOnlySpan<byte> propertyName = reader.ValueSpan;
+                    bool matched;
+                    ColumnSchema colSchema;
 
-                    if (validator.TryMatchColumn(propertyName, out var colSchema))
+                    if (reader.HasValueSequence || reader.ValueSpan.IndexOf((byte)'\\') >= 0)
+                    {
+                        int maxPropBytes = reader.HasValueSequence ? checked((int)reader.ValueSequence.Length) : reader.ValueSpan.Length;
+                        if (maxPropBytes <= unescapeScratch.Length)
+                        {
+                            int propLen = reader.CopyString(unescapeScratch);
+                            matched = validator.TryMatchColumn(unescapeScratch[..propLen], out colSchema);
+                        }
+                        else
+                        {
+                            byte[] rentedProp = ArrayPool<byte>.Shared.Rent(maxPropBytes);
+                            try
+                            {
+                                int propLen = reader.CopyString(rentedProp);
+                                matched = validator.TryMatchColumn(rentedProp.AsSpan(0, propLen), out colSchema);
+                            }
+                            finally
+                            {
+                                ArrayPool<byte>.Shared.Return(rentedProp);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        matched = validator.TryMatchColumn(reader.ValueSpan, out colSchema);
+                    }
+
+                    if (matched)
                     {
                         if (!reader.Read())
                         {
@@ -496,25 +513,59 @@ public static class Program
 
                         if (SchemaValidator.IsValidFormat(colSchema, ref reader))
                         {
-                            ReadOnlySpan<byte> propertyValue;
-                            if (reader.TokenType == System.Text.Json.JsonTokenType.True)
+                            if (reader.TokenType == System.Text.Json.JsonTokenType.Null)
                             {
-                                propertyValue = "true"u8;
+                                sink.WriteField(colSchema.Index, ReadOnlySpan<byte>.Empty, byteLine, FieldValueKind.Null);
+                            }
+                            else if (colSchema.DataTypeLower is "json" or "jsonb")
+                            {
+                                int start = (int)reader.TokenStartIndex;
+                                if (reader.TokenType is System.Text.Json.JsonTokenType.StartObject or System.Text.Json.JsonTokenType.StartArray)
+                                {
+                                    if (!reader.TrySkip())
+                                    {
+                                        recordValid = false;
+                                        break;
+                                    }
+                                }
+                                int end = (int)reader.BytesConsumed;
+                                sink.WriteField(colSchema.Index, byteLine.Slice(start, end - start), byteLine, FieldValueKind.RawJson);
+                            }
+                            else if (reader.TokenType == System.Text.Json.JsonTokenType.True)
+                            {
+                                sink.WriteField(colSchema.Index, "true"u8, byteLine, FieldValueKind.BooleanTrue);
                             }
                             else if (reader.TokenType == System.Text.Json.JsonTokenType.False)
                             {
-                                propertyValue = "false"u8;
+                                sink.WriteField(colSchema.Index, "false"u8, byteLine, FieldValueKind.BooleanFalse);
                             }
-                            else if (reader.TokenType == System.Text.Json.JsonTokenType.Null)
+                            else if (reader.TokenType == System.Text.Json.JsonTokenType.String && (reader.HasValueSequence || reader.ValueSpan.IndexOf((byte)'\\') >= 0))
                             {
-                                propertyValue = "null"u8;
+                                int maxValBytes = reader.HasValueSequence ? checked((int)reader.ValueSequence.Length) : reader.ValueSpan.Length;
+                                if (maxValBytes <= unescapeScratch.Length)
+                                {
+                                    int written = reader.CopyString(unescapeScratch);
+                                    sink.WriteField(colSchema.Index, unescapeScratch[..written], byteLine, FieldValueKind.ScalarOrString);
+                                }
+                                else
+                                {
+                                    byte[] rentedVal = ArrayPool<byte>.Shared.Rent(maxValBytes);
+                                    try
+                                    {
+                                        int written = reader.CopyString(rentedVal);
+                                        sink.WriteField(colSchema.Index, rentedVal.AsSpan(0, written), byteLine, FieldValueKind.ScalarOrString);
+                                    }
+                                    finally
+                                    {
+                                        ArrayPool<byte>.Shared.Return(rentedVal);
+                                    }
+                                }
                             }
                             else
                             {
-                                propertyValue = reader.ValueSpan;
+                                sink.WriteField(colSchema.Index, reader.ValueSpan, byteLine, FieldValueKind.ScalarOrString);
                             }
 
-                            sink.WriteField(colSchema.Index, propertyValue, byteLine);
                             presentFields[colSchema.Index] = true;
                         }
                         else
@@ -531,10 +582,13 @@ public static class Program
                             break;
                         }
 
-                        if (reader.TokenType == System.Text.Json.JsonTokenType.StartObject || 
-                            reader.TokenType == System.Text.Json.JsonTokenType.StartArray)
+                        if (reader.TokenType is System.Text.Json.JsonTokenType.StartObject or System.Text.Json.JsonTokenType.StartArray)
                         {
-                            reader.Skip();
+                            if (!reader.TrySkip())
+                            {
+                                recordValid = false;
+                                break;
+                            }
                         }
                     }
                 }
